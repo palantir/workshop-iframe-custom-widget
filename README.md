@@ -24,14 +24,8 @@ So why might you use this new option OSDK + custom iframe widget and why are we 
 
 ## Install
 
-We plan to publish this as an npm package so that you will be able to install it using a command similar to: 
-
 ```
 npm install @osdk/workshop-iframe-custom-widget
-```
-Until then, you can download the [tarball file](./workshop-iframe-custom-widget-1.0.0.tgz) in this repo, drop it into your web application's files and install it using command 
-```
-npm install PATH_TO/workshop-iframe-custom-widget-1.0.0.tgz
 ```
 
 ## Use
