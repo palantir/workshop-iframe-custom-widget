@@ -1,5 +1,7 @@
 jobs:
   publish:
+    docker:
+      - image: cimg/openjdk:11.0-browsers
     steps:
       - checkout
       - run:
