@@ -12,13 +12,13 @@
     },
     "repository": {
       "type": "git",
-      "url": "git+https://github.com/faye-tan/workshop-iframe-custom-widget.git"
+      "url": "git+https://github.com/palantir/workshop-iframe-custom-widget"
     },
-    "author": "",
+    "author": "Palantir Technologies, Inc",
     "bugs": {
-      "url": "https://github.com/faye-tan/workshop-iframe-custom-widget/issues"
+      "url": "https://github.com/palantir/workshop-iframe-custom-widget/issues"
     },
-    "homepage": "https://github.com/faye-tan/workshop-iframe-custom-widget#readme",
+    "homepage": "https://github.com/palantir/workshop-iframe-custom-widget#readme",
     "dependencies": {
       "react": "^18.3.1"
     },
