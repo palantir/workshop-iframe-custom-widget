@@ -1,25 +1,25 @@
-# Workshop Iframe React app plugin
+# Workshop Iframe Custom Widget
 
 ## Description
 
-A plugin to be used in React apps to enable bi-directional communication between the iframed react app and [Palantir's Workshop](https://www.palantir.com/docs/foundry/workshop/overview/) parent. The two way communication includes the following:
+A plugin to be used in custom applications to enable bi-directional communication between the iframed react app and [Palantir's Workshop](https://www.palantir.com/docs/foundry/workshop/overview/) parent. The two way communication includes the following:
 
-- Workshop can pass variable values to the iframed React app
-- The iframed React app is able to set variables' values in Workshop
-- The iframed React app is able to execute events configured in Workshop
+- Workshop can pass variable values to the iframed app
+- The iframed app is able to set variables' values in Workshop
+- The iframed app is able to execute events configured in Workshop
 
 ## How does it work?
 
-![Diagram of how this Workshop Iframe React app plugin works](./src/media/workshop-iframe-custom-widget-diagram.png)
+![Diagram of how this package works](./src/media/workshop-iframe-custom-widget-diagram.png)
 
 ## When should I use this?
 
-So why might you use this new option OSDK + custom iframe widget and why are we so excited about it? If you are a customer builder, this is the first time Palantir Workshop supports creating a new custom Workshop widget in React. This is the recommended path for custom widgets and we’re hoping it unlocks what can be created in Workshop!
+So why might you use this new option OSDK + custom iframe widget and why are we so excited about it? If you are a customer builder, this is the first time Palantir Workshop supports creating a new custom Workshop widget from a custom application. This is the recommended path for custom widgets and we’re hoping it unlocks what can be created in Workshop!
 
 ## Limitations
 
 - When a user opens the iframe for the first time they might see a login screen to authenticate. The iframe is responsible for going through the necessary authentication flow.
-- ObjectSet variables require specifying a concrete ObjectType for a given variable. Additionally, the current limit is 10,000 objects primaryKeys/objectRids that can be passed back and forth between Workshop and the iframed React app. Any more and they will be cut off at the first 10,000. This limitation will be removed once OSDK is able to support loading ObjectSets from temporary objectSetRids.
+- ObjectSet variables require specifying a concrete ObjectType for a given variable. Additionally, the current limit is 10,000 objects primaryKeys/objectRids that can be passed back and forth between Workshop and the iframed app. Any more and they will be cut off at the first 10,000. This limitation will be removed once OSDK is able to support loading ObjectSets from temporary objectSetRids.
 - Struct variable are not currently supported, but they are coming soon.
 
 ## Install
@@ -148,15 +148,15 @@ const ExampleComponent = () => {
 
 1. Why is the context object returned by `useWorkshopContext` wrapped in an async loading state?
 
-   Please refer to the diagram Figure 1.a and 1.b. When your React app is iframed inside of Workshop, the context object will not exist until Workshop accepts the config parameter and as such will be in a loading state until it is accepted. It may also be rejected by Workshop and as such will be wrapped in a failed to load async state with an accompanying error message.
+   Please refer to the diagram Figure 1.a and 1.b. When your custom app is iframed inside of Workshop, the context object will not exist until Workshop accepts the config parameter and as such will be in a loading state until it is accepted. It may also be rejected by Workshop and as such will be wrapped in a failed to load async state with an accompanying error message.
 
 2. Why should I provide default values when defining the config passed to `useWorkshopContext`?
 
-   During development when your React app is not iframed in Workshop, its not receiving any values and as such it would make development difficult if all you had to work with were a forever loading context object or a loaded context object with null values. Allowing you to provide default values when defining the config that gets translated to the context object returned by `useWorkshopContext` helps you during development when the app is not being iframed, as the plugin will detect whether your app is being iframed and if not, will return a loaded context object populated with your default values.
+   During development when your custom app is not iframed in Workshop, its not receiving any values and as such it would make development difficult if all you had to work with were a forever loading context object or a loaded context object with null values. Allowing you to provide default values when defining the config that gets translated to the context object returned by `useWorkshopContext` helps you during development when the app is not being iframed, as the plugin will detect whether your app is being iframed and if not, will return a loaded context object populated with your default values.
 
 3. Why is each value inside the context object returned by `useWorkshopContext` wrapped in with an async loading state?
 
-   Workshop's variables each have an async loading state, as variables could come from asynchronous execution, such as a function that takes 10 seconds to return a value. Having a 1:1 match between the types in the context object and Workshop means that the two have a consistent view of variable values. If a variable in Workshop goes into a loading state or fails to load, this async state is passed to the iframed React app allowing you to decide how to handle cases where one of the parameters is not available or currently might be re-loading. For example when implementing a custom submission form, you might want to disable the submission button if some of the inputs to your form hasn't loaded yet or are currently re-loading.
+   Workshop's variables each have an async loading state, as variables could come from asynchronous execution, such as a function that takes 10 seconds to return a value. Having a 1:1 match between the types in the context object and Workshop means that the two have a consistent view of variable values. If a variable in Workshop goes into a loading state or fails to load, this async state is passed to the iframed app allowing you to decide how to handle cases where one of the parameters is not available or currently might be re-loading. For example when implementing a custom submission form, you might want to disable the submission button if some of the inputs to your form hasn't loaded yet or are currently re-loading.
    
 ## Questions/Support
 
