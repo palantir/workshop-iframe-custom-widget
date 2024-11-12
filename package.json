@@ -1,0 +1,32 @@
+{
+    "name": "@osdk/workshop-iframe-custom-widget",
+    "version": "1.0.0",
+    "description": "Library to enable bi-directional communication between Workshop and any custom React app.",
+    "access": "public",
+    "licese": "SEE LICENSE IN LICENSE.md",
+    "exports": {
+      ".": "./src/index.ts"
+    },
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/faye-tan/workshop-iframe-custom-widget.git"
+    },
+    "author": "",
+    "bugs": {
+      "url": "https://github.com/faye-tan/workshop-iframe-custom-widget/issues"
+    },
+    "homepage": "https://github.com/faye-tan/workshop-iframe-custom-widget#readme",
+    "dependencies": {
+      "react": "^18.3.1"
+    },
+    "devDependencies": {
+      "@types/react": "^18.3.4"
+    }, 
+    "publishConfig": {
+      "access": "public"
+    }
+  }
+  
