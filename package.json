@@ -1,32 +1,31 @@
 {
     "name": "@osdk/workshop-iframe-custom-widget",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Library to enable bi-directional communication between Workshop and any custom React app.",
     "access": "public",
     "licese": "SEE LICENSE IN LICENSE.md",
     "exports": {
-      ".": "./src/index.ts"
+        ".": "./src/index.ts"
     },
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/palantir/workshop-iframe-custom-widget"
+        "type": "git",
+        "url": "git+https://github.com/palantir/workshop-iframe-custom-widget"
     },
     "author": "Palantir Technologies, Inc",
     "bugs": {
-      "url": "https://github.com/palantir/workshop-iframe-custom-widget/issues"
+        "url": "https://github.com/palantir/workshop-iframe-custom-widget/issues"
     },
     "homepage": "https://github.com/palantir/workshop-iframe-custom-widget#readme",
     "dependencies": {
-      "react": "^18.3.1"
+        "react": "^18.3.1"
     },
     "devDependencies": {
-      "@types/react": "^18.3.4"
-    }, 
+        "@types/react": "^18.3.4"
+    },
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     }
-  }
-  
+}
