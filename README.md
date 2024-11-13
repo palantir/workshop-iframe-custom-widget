@@ -154,8 +154,8 @@ const ExampleComponent = () => {
    
 ## Questions/Support
 
-  Please post to [https://community.palantir.com/](https://community.palantir.com/)
+  Please post to [https://community.palantir.com](https://community.palantir.com)
   
 ## License 
 
-The source code, documentation, and other materials herein are subject to the Palantir License. See [LICENSE](./LICENSE).
+The source code, documentation, and other materials herein are subject to the Palantir License. See [LICENSE](./LICENSE.md).
