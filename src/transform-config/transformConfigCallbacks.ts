@@ -46,13 +46,13 @@ export const createSetLoadedValueCallback =
       variableType,
       value
     );
-    setConfigValues(prevConfigValues => {
-      return createNewConfigValueMapWithValueChange(
-        prevConfigValues,
-        valueLocator,
-        asyncValueLoaded(variableValue)
-      );
-    });
+    setConfigValues(prevConfigValues => 
+         createNewConfigValueMapWithValueChange(
+          prevConfigValues,
+          valueLocator,
+          asyncValueLoaded(variableValue)
+        )
+    );
 
     const valueTypeToSet = maybeTransformValueToSetToWorkshopValue(
       variableType,
@@ -65,7 +65,7 @@ export const createSetLoadedValueCallback =
         type: MESSAGE_TYPES_TO_WORKSHOP.SETTING_VALUE,
         iframeWidgetId: iframeWidgetId,
         valueLocator,
-        // Workshop has null values outside async wrapper
+        // Workshop has null values outside async wrapper 
         value:
           valueTypeToSet == null
             ? valueTypeToSet
@@ -89,13 +89,13 @@ export const createSetReloadingValueCallback =
       variableType,
       value
     );
-    setConfigValues(prevConfigValues => {
-      return createNewConfigValueMapWithValueChange(
+    setConfigValues(prevConfigValues => 
+      createNewConfigValueMapWithValueChange(
         prevConfigValues,
         valueLocator,
         asyncValueReloading(variableValue)
-      );
-    });
+      )
+    );
 
     const valueTypeToSet = maybeTransformValueToSetToWorkshopValue(
       variableType,

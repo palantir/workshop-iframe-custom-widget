@@ -54,7 +54,6 @@ export function transformConfigWorkshopContext<
     createLocatorInListCallback: (locator: ILocator) => ILocator;
   }
 ): IWorkshopContext<T> {
-  console.log("57, TRANSFORMING", configValues);
   const workshopContext: { [fieldId: string]: IWorkshopContextField<T, V> } =
     {};
 
@@ -84,11 +83,7 @@ export function transformConfigWorkshopContext<
                 configValues[fieldId].type === "single"
                   ? configValues[fieldId].value
                   : undefined,
-              setLoading: createSetLoadingCallback(
-                iframeWidgetId,
-                setConfigValues,
-                locator
-              ),
+              setLoading: createSetLoadingCallback(iframeWidgetId, setConfigValues, locator),
               setLoadedValue: createSetLoadedValueCallback(
                 iframeWidgetId,
                 setConfigValues,
@@ -97,7 +92,7 @@ export function transformConfigWorkshopContext<
               ),
               setReloadingValue: createSetReloadingValueCallback(
                 iframeWidgetId,
-                setConfigValues,
+                setConfigValues, 
                 locator,
                 field.fieldValue.variableType
               ),
@@ -148,11 +143,10 @@ export function transformConfigWorkshopContext<
     }
   });
 
-  console.log("57, DONE TRANSFORMING", workshopContext);
   return workshopContext as IWorkshopContext<T>;
 }
 
-/**
+/** 
  * Returns a function to be passed to recursive calls of transformConfigWorkshopContext
  * which will create the tree path to the nested value in a listOf field.
  */
