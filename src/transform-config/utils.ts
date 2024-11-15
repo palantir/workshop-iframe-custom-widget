@@ -31,6 +31,8 @@ const MAX_OBJECTS = 10000;
 /**
  * Given the value map, a value locator, and a value,
  * recursively traverses the value map and updates it.
+ * 
+ * @param configValueMap: the entire value map, given starting from the root.
  */
 export function createNewConfigValueMapWithValueChange(
   configValueMap: IConfigValueMap,
