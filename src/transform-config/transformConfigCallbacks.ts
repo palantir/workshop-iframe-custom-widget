@@ -127,13 +127,13 @@ export const createSetLoadingCallback =
     valueLocator: ILocator
   ) =>
   () => {
-    setConfigValues(prevConfigValues => {
-      return createNewConfigValueMapWithValueChange(
+    setConfigValues(prevConfigValues => 
+      createNewConfigValueMapWithValueChange(
         prevConfigValues,
         valueLocator,
         asyncValueLoading()
-      );
-    });
+      )
+    );
 
     // Only able to send message to workshop if iframeWidgetId was received
     if (iframeWidgetId != null) {
@@ -156,13 +156,13 @@ export const createSetFailedWithErrorCallback =
     valueLocator: ILocator
   ) =>
   (error: string) => {
-    setConfigValues(prevConfigValues => {
-      return createNewConfigValueMapWithValueChange(
+    setConfigValues(prevConfigValues => 
+      createNewConfigValueMapWithValueChange(
         prevConfigValues,
         valueLocator,
         asyncValueFailed(error)
-      );
-    });
+      )
+    );
 
     // Only able to send message to workshop if iframeWidgetId was received
     if (iframeWidgetId != null) {
