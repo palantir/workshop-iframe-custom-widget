@@ -48,7 +48,7 @@ export function transformConfigWorkshopContext<
 >(
   config: T,
   configValues: IConfigValueMap,
-  setConfigValues: (newConfigValues: IConfigValueMap) => void,
+  setConfigValues: React.Dispatch<React.SetStateAction<IConfigValueMap>>,
   iframeWidgetId: string | undefined,
   opts?: {
     createLocatorInListCallback: (locator: ILocator) => ILocator;
@@ -64,11 +64,11 @@ export function transformConfigWorkshopContext<
       case "single": {
         const locator: ILocator =
           opts == null
-                ? { type: "single", configFieldId: fieldId }
-                : opts.createLocatorInListCallback({
-                    type: "single",
-                    configFieldId: fieldId,
-                  });
+            ? { type: "single", configFieldId: fieldId }
+            : opts.createLocatorInListCallback({
+                type: "single",
+                configFieldId: fieldId,
+              });
         switch (field.fieldValue.type) {
           case "event": {
             workshopContext[fieldId] = {
@@ -83,23 +83,22 @@ export function transformConfigWorkshopContext<
                 configValues[fieldId].type === "single"
                   ? configValues[fieldId].value
                   : undefined,
-              setLoading: createSetLoadingCallback(iframeWidgetId, locator),
+              setLoading: createSetLoadingCallback(iframeWidgetId, setConfigValues, locator),
               setLoadedValue: createSetLoadedValueCallback(
                 iframeWidgetId,
                 setConfigValues,
-                configValues,
                 locator,
                 field.fieldValue.variableType
               ),
               setReloadingValue: createSetReloadingValueCallback(
                 iframeWidgetId,
                 setConfigValues, 
-                configValues,
                 locator,
                 field.fieldValue.variableType
               ),
               setFailedWithError: createSetFailedWithErrorCallback(
                 iframeWidgetId,
+                setConfigValues,
                 locator
               ),
             } as ValueAndSetterMethods<typeof field.fieldValue.variableType>;
@@ -152,12 +151,12 @@ export function transformConfigWorkshopContext<
  * which will create the tree path to the nested value in a listOf field.
  */
 const getCreateLocator =
-(configFieldId: string, index: number) =>
-(locator: ILocator): ILocator => {
-  return {
-    type: "listOf",
-    configFieldId,
-    index,
-    locator,
+  (configFieldId: string, index: number) =>
+  (locator: ILocator): ILocator => {
+    return {
+      type: "listOf",
+      configFieldId,
+      index,
+      locator,
+    };
   };
-};

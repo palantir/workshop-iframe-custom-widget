@@ -19,7 +19,7 @@ import {
 } from "../internal";
 import {
   asyncValueLoaded,
-  asyncReloading,
+  asyncValueReloading,
   asyncValueLoading,
   asyncValueFailed,
 } from "../types";
@@ -37,8 +37,7 @@ import {
 export const createSetLoadedValueCallback =
   <V extends IVariableType_WithDefaultValue>(
     iframeWidgetId: string | undefined,
-    setConfigValues: (newConfigValues: IConfigValueMap) => void,
-    configValues: IConfigValueMap,
+    setConfigValues: React.Dispatch<React.SetStateAction<IConfigValueMap>>,
     valueLocator: ILocator,
     variableType: IVariableType_WithDefaultValue
   ) =>
@@ -47,12 +46,12 @@ export const createSetLoadedValueCallback =
       variableType,
       value
     );
-    setConfigValues(
-      createNewConfigValueMapWithValueChange(
-        configValues,
-        valueLocator,
-        asyncValueLoaded(variableValue)
-      )
+    setConfigValues(prevConfigValues => 
+         createNewConfigValueMapWithValueChange(
+          prevConfigValues,
+          valueLocator,
+          asyncValueLoaded(variableValue)
+        )
     );
 
     const valueTypeToSet = maybeTransformValueToSetToWorkshopValue(
@@ -81,8 +80,7 @@ export const createSetLoadedValueCallback =
 export const createSetReloadingValueCallback =
   <V extends IVariableType_WithDefaultValue>(
     iframeWidgetId: string | undefined,
-    setConfigValues: (newConfigValues: IConfigValueMap) => void,
-    configValues: IConfigValueMap,
+    setConfigValues: React.Dispatch<React.SetStateAction<IConfigValueMap>>,
     valueLocator: ILocator,
     variableType: IVariableType_WithDefaultValue
   ) =>
@@ -91,11 +89,11 @@ export const createSetReloadingValueCallback =
       variableType,
       value
     );
-    setConfigValues(
+    setConfigValues(prevConfigValues => 
       createNewConfigValueMapWithValueChange(
-        configValues,
+        prevConfigValues,
         valueLocator,
-        asyncReloading(variableValue)
+        asyncValueReloading(variableValue)
       )
     );
 
@@ -110,11 +108,11 @@ export const createSetReloadingValueCallback =
         type: MESSAGE_TYPES_TO_WORKSHOP.SETTING_VALUE,
         iframeWidgetId,
         valueLocator,
-        // Workshop has null values outside async wrapper 
+        // Workshop has null values outside async wrapper
         value:
           valueTypeToSet == null
             ? valueTypeToSet
-            : asyncReloading(valueTypeToSet),
+            : asyncValueReloading(valueTypeToSet),
       });
     }
   };
@@ -123,7 +121,20 @@ export const createSetReloadingValueCallback =
  * @returns a function to set a context field as "loading"
  */
 export const createSetLoadingCallback =
-  (iframeWidgetId: string | undefined, valueLocator: ILocator) => () => {
+  (
+    iframeWidgetId: string | undefined,
+    setConfigValues: React.Dispatch<React.SetStateAction<IConfigValueMap>>,
+    valueLocator: ILocator
+  ) =>
+  () => {
+    setConfigValues(prevConfigValues => 
+      createNewConfigValueMapWithValueChange(
+        prevConfigValues,
+        valueLocator,
+        asyncValueLoading()
+      )
+    );
+
     // Only able to send message to workshop if iframeWidgetId was received
     if (iframeWidgetId != null) {
       sendMessageToWorkshop({
@@ -139,8 +150,20 @@ export const createSetLoadingCallback =
  * @returns a function to set a context field as "failed" with an error message
  */
 export const createSetFailedWithErrorCallback =
-  (iframeWidgetId: string | undefined, valueLocator: ILocator) =>
+  (
+    iframeWidgetId: string | undefined,
+    setConfigValues: React.Dispatch<React.SetStateAction<IConfigValueMap>>,
+    valueLocator: ILocator
+  ) =>
   (error: string) => {
+    setConfigValues(prevConfigValues => 
+      createNewConfigValueMapWithValueChange(
+        prevConfigValues,
+        valueLocator,
+        asyncValueFailed(error)
+      )
+    );
+
     // Only able to send message to workshop if iframeWidgetId was received
     if (iframeWidgetId != null) {
       sendMessageToWorkshop({
@@ -152,7 +175,7 @@ export const createSetFailedWithErrorCallback =
     }
   };
 
-  /**
+/**
  * @returns a function to execute an event in Workshop
  */
 export const createExecuteEventCallback =

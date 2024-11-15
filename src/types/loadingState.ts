@@ -121,7 +121,7 @@ export function asyncValueFailed<E>(error: E): IAsyncValue_Failed<E> {
  * @param progress: The loading progress percentage
  * @type V: The value type
  */
-export function asyncReloading<V>(
+export function asyncValueReloading<V>(
   value: V,
   progress?: number
 ): IAsyncValue_Reloading<V> {
