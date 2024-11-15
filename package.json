@@ -1,6 +1,6 @@
 {
     "name": "@osdk/workshop-iframe-custom-widget",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Plugin to enable bi-directional communication between Workshop and any custom React app.",
     "access": "public",
     "licese": "SEE LICENSE IN LICENSE.md",
