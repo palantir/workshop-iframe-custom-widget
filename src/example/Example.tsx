@@ -15,9 +15,7 @@ import React from "react";
 import { COMPREHENSIVE_EXAMPLE_CONFIG } from "./ExampleConfig";
 import {
   IAsyncValue,
-  isAsyncValue_FailedLoading,
-  isAsyncValue_Loaded,
-  isAsyncValue_Loading,
+  visitLoadingState,
 } from "../types/loadingState";
 import { IWorkshopContext } from "../types/workshopContext";
 import { useWorkshopContext } from "../";
@@ -30,18 +28,13 @@ import { ObjectSetLocators } from "../types";
 export const Example = () => {
   const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG);
 
-  if (isAsyncValue_Loading(workshopContext)) {
-    return <div>LOADING...</div>;
-  } else if (isAsyncValue_Loaded(workshopContext)) {
-    const loadedWorkshopContext = workshopContext.value;
-    return (
-      <LoadedComprehensiveExample
-        loadedWorkshopContext={loadedWorkshopContext}
-      />
-    );
-  } else if (isAsyncValue_FailedLoading(workshopContext)) {
-    return <div>SOMETHING WENT WRONG...</div>;
-  }
+  // Use a visitor function to render based on the async status of the workshop context object
+  return visitLoadingState(workshopContext, {
+    loading: () => <>Loading...</>,
+    succeeded: loadedContext => <LoadedComprehensiveExample loadedWorkshopContext={loadedContext} />, 
+    reloading: _reloadingContext => <>Reloading...</>,
+    failed: _error => <>Error...</>, 
+  });
 };
 
 /**
@@ -129,6 +122,7 @@ const LoadedComprehensiveExample: React.FC<{
     listItem.eventInsideListOf.executeEvent(undefined); // Takes a React MouseEvent, or undefined if not applicable
 
     // Single fields inside listOf each also have a value and setter methods
+    // @ts-ignore
     const stringValueInsideListOf: IAsyncValue<string | undefined> =
       listItem.stringFieldInsideListOf.fieldValue;
     listItem.stringFieldInsideListOf.setLoading();
@@ -157,5 +151,27 @@ const LoadedComprehensiveExample: React.FC<{
     });
   });
 
-  return <></>;
+  return <>
+    {stringFieldValue}
+    <br />
+    {booleanFieldValue}
+    <br />
+    {numberFieldValue}
+    <br />
+    {dateFieldValue}
+    <br />
+    {timestampFieldValue}
+    <br />
+    {objectSetFieldValue}
+    <br />
+    {stringListFieldValue}
+    <br />
+    {booleanListFieldValue}
+    <br />
+    {numberListFieldValue}
+    <br />
+    {dateListFieldValue}
+    <br />
+    {timestampListFieldValue}
+  </>;
 };
