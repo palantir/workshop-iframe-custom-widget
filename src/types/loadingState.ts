@@ -177,7 +177,7 @@ export function isAsyncValue_Loaded<V, E>(
 }
 
 /**
- * Type guard for "realoding" async loaded state.
+ * Type guard for "reloading" async loaded state.
  * 
  * @param state: The async loaded state to type check
  * @type V: The value type
