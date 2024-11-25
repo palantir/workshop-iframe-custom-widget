@@ -100,8 +100,8 @@ const LoadedComprehensiveExample: React.FC<{
   stringField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
 
   booleanField.setLoading();
-  booleanField.setLoadedValue(false); // The value takes the config field type, in this case, string
-  booleanField.setReloadingValue(true); // The value takes the config field type, in this case, string
+  booleanField.setLoadedValue(false); // The value takes the config field type, in this case, boolean
+  booleanField.setReloadingValue(true); // The value takes the config field type, in this case, boolean
   booleanField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
 
   dateField.setLoading();
