@@ -177,6 +177,20 @@ export function isAsyncValue_Loaded<V, E>(
 }
 
 /**
+ * Type guard for "reloading" async loaded state.
+ * 
+ * @param state: The async loaded state to type check
+ * @type V: The value type
+ * @type E: The error type
+ * @returns true only if the asyncloaded state is "reloading".
+ */
+export function isAsyncValue_Reloading<V, E>(
+  state: IAsyncValue<V, E> | undefined
+): state is IAsyncValue_Reloading<V> {
+  return state != null && state.status === "RELOADING";
+}
+
+/**
  * Type guard for "failed loading" async loaded state.
  * 
  * @param state: The async loaded state to type check
@@ -188,4 +202,33 @@ export function isAsyncValue_FailedLoading<V, E>(
   state: IAsyncValue<V, E> | undefined
 ): state is IAsyncValue_Failed<E> {
   return state != null && state.status === "FAILED";
+}
+
+/**
+ * A visitor with all possible async states
+ */
+export interface IAsyncValueVisitor<V, R, E = unknown> {
+  loading: () => R;
+  succeeded: (value: V) => R;
+  reloading: (previousValue: V) => R;
+  failed: (error: E) => R;
+}
+
+/**
+ * A visitor function to visit an IAsyncValue
+ */
+export function visitLoadingState<V, R, E = unknown>(
+  state: IAsyncValue<V, E>,
+  visitor: IAsyncValueVisitor<V, R, E>,
+): R {
+  if (isAsyncValue_Loading(state) || isAsyncValue_NotStarted(state)) {
+      return visitor.loading();
+  } else if (isAsyncValue_Reloading(state)) {
+      return visitor.reloading(state.value);
+  } else if (isAsyncValue_FailedLoading(state)) {
+      return visitor.failed(state.error);
+  }
+
+  // state.status === "LOADED"
+  return visitor.succeeded(state.value);
 }
