@@ -68,11 +68,9 @@ workflows:
   tagged-build:
     jobs:
       - install-deps
-      # - run-tests
       - build
       - publish:
           requires:
-            # - run-tests
             - build
           filters:
             tags:
