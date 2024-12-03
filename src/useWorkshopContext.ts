@@ -18,7 +18,7 @@ import {
   asyncValueLoaded,
   asyncValueFailed,
 } from "./types/loadingState";
-import { isInsideIframe, sendMessageToWorkshop } from "./utils";
+import { isIframedInsideWorkshop, sendMessageToWorkshop } from "./utils";
 import { IWorkshopContext } from "./types/workshopContext";
 import { createDefaultConfigValueMap } from "./createDefaultConfigValueMap";
 import { transformConfigWorkshopContext } from "./transform-config";
@@ -110,10 +110,10 @@ export function useWorkshopContext<T extends IConfigDefinition>(
     };
   }, [messageHandler]);
 
-  const insideIframe = isInsideIframe();
+  const insideWorkshopIframe = isIframedInsideWorkshop();
 
   // If not inside iframe, simply return the loaded context with default values
-  if (!insideIframe) {
+  if (!insideWorkshopIframe) {
     return asyncValueLoaded(
       transformConfigWorkshopContext(
         configDefinition,
