@@ -56,9 +56,12 @@ export function isInsideIframe(): boolean {
 export function isIframedInsideWorkshop(): boolean {
   // Need try/catch since browsers can block access to window.top due to same origin policy. IE bugs also take place.
   try {
-    if (window.top !== window.self) {
-      const parentUrlPath = window.top?.location.pathname ?? "";
-      return parentUrlPath.includes("ri.workshop.main.module.")
+    if (window.self !== window.parent) {
+      const parentUrl = new URL(document.referrer || window.parent.location.href);
+      return parentUrl.pathname.includes("ri.workshop.main.module.");
+    } else if (window.self !== window.top && window.top != null) {
+      const topUrl = new URL(document.referrer || window.top.location.href);
+      return topUrl.pathname.includes("ri.workshop.main.module.");
     }
   } catch (error) {
     console.error("Error accessing parent frame location: ", error);
