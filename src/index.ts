@@ -14,5 +14,5 @@ limitations under the License.
 
 export { useWorkshopContext } from "./useWorkshopContext";
 export * from "./internal";
-export { isInsideIframe, isIframedInsideWorkshop } from "./utils";
+export { isInsideIframe } from "./utils";
 export * from "./types";

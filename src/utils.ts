@@ -33,12 +33,11 @@ export function assertNever(message: string, value: never): never {
 
 /**
  * Detect whether app is being iframed. Excludes Palantir Foundry's VS code workspaces for the purposes of development.
- * @deprecated Use isIframedInsideWorkshop instead.
  */
 export function isInsideIframe(): boolean {
   // some domains end in .com but some end in .co.uk 
   // TODO: need to check all foundry domains to make sure this can handle all of them
-  if (window.self.location.origin.includes("containers.palantirfoundry.co")) {
+  if (window.self.location.href.includes("foundry-container-service")) {
     return false;
   }
 
@@ -48,25 +47,6 @@ export function isInsideIframe(): boolean {
   } catch (e) {
     return true;
   }
-}
-
-/**
- * Returns true only if application is being iframed inside of Workshop.
- */
-export function isIframedInsideWorkshop(): boolean {
-  // Need try/catch since browsers can block access to window.top due to same origin policy. IE bugs also take place.
-  try {
-    if (window.self !== window.parent) {
-      const parentUrl = new URL(document.referrer || window.parent.location.href);
-      return parentUrl.pathname.includes("ri.workshop.main.module.");
-    } else if (window.self !== window.top && window.top != null) {
-      const topUrl = new URL(document.referrer || window.top.location.href);
-      return topUrl.pathname.includes("ri.workshop.main.module.");
-    }
-  } catch (error) {
-    console.error("Error accessing parent frame location: ", error);
-  }
-  return false;
 }
 
 /**
