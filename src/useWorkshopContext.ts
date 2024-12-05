@@ -81,6 +81,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
           sendMessageToWorkshop({
             type: MESSAGE_TYPES_TO_WORKSHOP.SENDING_CONFIG,
             config: configFields,
+            pathname: window.location.pathname,
           });
           return;
         case MESSAGE_TYPES_FROM_WORKSHOP.VALUE_CHANGE:
@@ -98,6 +99,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
     sendMessageToWorkshop({
       type: MESSAGE_TYPES_TO_WORKSHOP.SENDING_CONFIG,
       config: configFields,
+      pathname: window.location.pathname,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
