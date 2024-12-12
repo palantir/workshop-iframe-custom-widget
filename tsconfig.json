@@ -1,17 +1,18 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "ES2022",
+        "outDir": "./build",
+        "rootDir": "./src",
         "useDefineForClassFields": true,
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "module": "ESNext",
         "skipLibCheck": true,
 
         /* Bundler mode */
         "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": true,
+        "noEmit": false,
         "jsx": "react-jsx",
 
         /* Linting */
@@ -19,6 +20,10 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noUncheckedIndexedAccess": true,
-        "noFallthroughCasesInSwitch": true
-    }
+        "noFallthroughCasesInSwitch": true,
+
+        "declaration": true,
+        "declarationMap": true
+    }, 
+    "include": ["src/**/*"]
 }

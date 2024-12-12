@@ -1,11 +1,62 @@
 version: 2.1
 
-jobs:
-  publish:
+executors:
+  node-executor:
     docker:
-      - image: cimg/openjdk:11.0-browsers
+      - image: cimg/node:16.13.0
+
+jobs:
+  install-deps:
+    executor: node-executor
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+      - run:
+          name: Install Dependencies
+          command: npm ci
+      - save_cache:
+          paths:
+            - ./node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+
+  # TODO: need to set up tests
+  # run-tests:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys:
+  #           - v1-dependencies-{{ checksum "package-lock.json" }}
+  #           - v1-dependencies-
+  #     - run:
+  #         name: Run Tests
+  #         command: npm test
+
+  build:
+    executor: node-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+      - run:
+          name: Build Project
+          command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  publish:
+    executor: node-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Publish to NPM
           command: |
@@ -20,12 +71,17 @@ jobs:
         command: echo "All required jobs finished successfully"
 
 workflows:
+  version: 2
   tagged-build:
     jobs:
+      - install-deps
+      - build
       - publish:
+          requires:
+            - build
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*/
+              only: /^v[0-9]+(\.[0-9]+)*$/
       - circle-all:
           requires: []
           filters:
