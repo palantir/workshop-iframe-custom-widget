@@ -36,7 +36,7 @@ export function assertNever(message: string, value: never): never {
  */
 export function isInsideIframe(): boolean {
   // If the application is inside a foundry container, it's being iframed in a local development environment
-  if (window.self.location.pathname.startsWith("/foundry-container-service")) {
+  if (window.self.location.pathname.startsWith("/foundry-container-service/")) {
     return false;
   }
 
