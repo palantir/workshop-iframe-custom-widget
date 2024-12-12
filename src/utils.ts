@@ -35,9 +35,8 @@ export function assertNever(message: string, value: never): never {
  * Detect whether app is being iframed. Excludes Palantir Foundry's VS code workspaces for the purposes of development.
  */
 export function isInsideIframe(): boolean {
-  // some domains end in .com but some end in .co.uk 
-  // TODO: need to check all foundry domains to make sure this can handle all of them
-  if (window.self.location.origin.includes("containers.palantirfoundry.co")) {
+  // If the application is inside a foundry container, it's being iframed in a local development environment
+  if (window.self.location.pathname.startsWith("/foundry-container-service/")) {
     return false;
   }
 
