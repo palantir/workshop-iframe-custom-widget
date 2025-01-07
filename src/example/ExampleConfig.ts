@@ -172,44 +172,35 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
       },
     },
   },
-  // TODO: struct not yet fully supported
-  // {
-  //     fieldId: "input-struct-field",
-  //     field: {
-  //         type: "single",
-
-  //         label: "Input struct",
-  //         fieldValue: {
-  //             type: "inputOutput",
-  //             variableType: {
-  //                 type: "struct",
-  //                 structFieldTypes: [
-  //                     {
-  //                         fieldId: "struct-field-1",
-  //                         fieldType: {
-  //                             type: "string",
-  //                         },
-  //                     },
-  //                     {
-  //                         fieldId: "struct-field-2",
-  //                         fieldType: {
-  //                             type: "boolean",
-  //                         },
-  //                     },
-  //                 ],
-  //             },
-  //             defaultValue: {
-  //                 status: "LOADED",
-  //                 defaultValue: {
-  //                     structFields: {
-  //                         "struct-field-1": "yay",
-  //                         "struct-field-2": false,
-  //                     }
-  //                 }
-  //             }
-  //         },
-  //     }
-  // },
+  {
+    fieldId: "input-struct-field",
+    field: {
+      type: "single",
+      label: "Input struct",
+      fieldValue: {
+        type: "inputOutput",
+        variableType: {
+          type: "struct",
+          structFieldTypes: [
+            {
+              fieldId: "struct-field-1",
+              fieldType: {
+                type: "string",
+                defaultValue: "yay",
+              },
+            },
+            {
+              fieldId: "struct-field-2",
+              fieldType: {
+                type: "boolean",
+                defaultValue: false,
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
   {
     fieldId: "event",
     field: {
@@ -251,43 +242,35 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
             },
           },
         },
-        // TODO: struct not supported yet
-        // {
-        //     fieldId: "structInListOf",
-        //     field: {
-        //         type: "single",
-        //         label: "Struct in list of",
-        //         fieldValue: {
-        //             type: "inputOutput",
-        //             variableType: {
-        //                 type: "struct",
-        //                 structFieldTypes: [
-        //                     {
-        //                         fieldId: "struct-field-1",
-        //                         fieldType: {
-        //                             type: "number",
-        //                         },
-        //                     },
-        //                     {
-        //                         fieldId: "struct-field-2",
-        //                         fieldType: {
-        //                             type: "date",
-        //                         },
-        //                     },
-        //                 ],
-        //             },
-        //             defaultValue: {
-        //                 status: "LOADED",
-        //                 defaultValue: {
-        //                     structFields: {
-        //                         "struct-field-1": 321,
-        //                         "struct-field-2": new Date("2024-01-01"),
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // },
+        {
+          fieldId: "structInListOf",
+          field: {
+            type: "single",
+            label: "Struct in list of",
+            fieldValue: {
+              type: "inputOutput",
+              variableType: {
+                type: "struct",
+                structFieldTypes: [
+                  {
+                    fieldId: "struct-field-1",
+                    fieldType: {
+                      type: "number",
+                      defaultValue: 321,
+                    },
+                  },
+                  {
+                    fieldId: "struct-field-2",
+                    fieldType: {
+                      type: "date",
+                      defaultValue: new Date("2024-01-01"),
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
         {
           fieldId: "nestedListOfField",
           field: {
