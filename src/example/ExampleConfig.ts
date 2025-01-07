@@ -173,7 +173,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
     },
   },
   {
-    fieldId: "input-struct-field",
+    fieldId: "structField",
     field: {
       type: "single",
       label: "Input struct",
@@ -183,14 +183,14 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
           type: "struct",
           structFieldTypes: [
             {
-              fieldId: "struct-field-1",
+              fieldId: "structField1",
               fieldType: {
                 type: "string",
                 defaultValue: "yay",
               },
             },
             {
-              fieldId: "struct-field-2",
+              fieldId: "structField2",
               fieldType: {
                 type: "boolean",
                 defaultValue: false,
@@ -243,7 +243,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
           },
         },
         {
-          fieldId: "structInListOf",
+          fieldId: "structInsideListOf",
           field: {
             type: "single",
             label: "Struct in list of",
@@ -253,14 +253,14 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
                 type: "struct",
                 structFieldTypes: [
                   {
-                    fieldId: "struct-field-1",
+                    fieldId: "structField1",
                     fieldType: {
                       type: "number",
                       defaultValue: 321,
                     },
                   },
                   {
-                    fieldId: "struct-field-2",
+                    fieldId: "structField2",
                     fieldType: {
                       type: "date",
                       defaultValue: new Date("2024-01-01"),

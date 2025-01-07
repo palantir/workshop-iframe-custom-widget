@@ -13,13 +13,10 @@ limitations under the License.
  */
 import React from "react";
 import { COMPREHENSIVE_EXAMPLE_CONFIG } from "./ExampleConfig";
-import {
-  IAsyncValue,
-  visitLoadingState,
-} from "../types/loadingState";
+import { IAsyncValue, visitLoadingState } from "../types/loadingState";
 import { IWorkshopContext } from "../types/workshopContext";
 import { useWorkshopContext } from "../";
-import { ObjectSetLocators } from "../types";
+import { IConfigDefinition, ObjectSetLocators } from "../types";
 
 /**
  * This is an example of how to use `useWorkshopContext`, and then ensure that the context object returned is loaded before
@@ -31,9 +28,13 @@ export const Example = () => {
   // Use a visitor function to render based on the async status of the workshop context object
   return visitLoadingState(workshopContext, {
     loading: () => <>Loading...</>,
-    succeeded: loadedContext => <LoadedComprehensiveExample loadedWorkshopContext={loadedContext} />, 
-    reloading: _reloadingContext => <>Reloading...</>,
-    failed: _error => <>Error...</>, 
+    succeeded: (
+      loadedContext: IWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>
+    ) => <LoadedComprehensiveExample loadedWorkshopContext={loadedContext} />,
+    reloading: (
+      _reloadingContext: IWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>
+    ) => <>Reloading...</>,
+    failed: (_error) => <>Error...</>,
   });
 };
 
@@ -49,6 +50,7 @@ const LoadedComprehensiveExample: React.FC<{
     numberField,
     dateField,
     timestampField,
+    structField,
     stringListField,
     objectSetField,
     event,
@@ -72,6 +74,15 @@ const LoadedComprehensiveExample: React.FC<{
   const dateFieldValue: IAsyncValue<string | undefined> = dateField.fieldValue;
   const timestampFieldValue: IAsyncValue<Date | undefined> =
     timestampField.fieldValue;
+  const structFieldValue: IAsyncValue<
+    | {
+        structFields: {
+          structField1: string | undefined;
+          structField2: boolean | undefined;
+        };
+      }
+    | undefined
+  > = structField.fieldValue;
 
   const objectSetFieldValue: IAsyncValue<ObjectSetLocators | undefined> =
     objectSetField.fieldValue;
@@ -79,13 +90,13 @@ const LoadedComprehensiveExample: React.FC<{
   //      const primaryKeys: string[] = isAsyncValueLoaded(objectSetFieldValue) ? objectSetFieldValue.value.primaryKeys : [];
   //      const housesfilteredByPrimaryKey: ObjectSet<RottenTomatoesMovies> = client.ontology.objects.RottenTomatoesMovies.where(query => query.rottenTomatoesLink.containsAnyTerm(primaryKeys.join(" ")));
 
-  const stringListFieldValue: IAsyncValue<string[] | undefined>  =
+  const stringListFieldValue: IAsyncValue<string[] | undefined> =
     stringListField.fieldValue;
   const booleanListFieldValue: IAsyncValue<boolean[] | undefined> =
     booleanListField.fieldValue;
   const numberListFieldValue: IAsyncValue<number[] | undefined> =
     numberListField.fieldValue;
-  // date arrays are stored as a string array with every entry in the format "yyyy-mm-dd" 
+  // date arrays are stored as a string array with every entry in the format "yyyy-mm-dd"
   const dateListFieldValue: IAsyncValue<string[] | undefined> =
     dateListField.fieldValue;
   const timestampListFieldValue: IAsyncValue<Date[] | undefined> =
@@ -97,17 +108,36 @@ const LoadedComprehensiveExample: React.FC<{
   stringField.setLoading();
   stringField.setLoadedValue("Hello world!!!"); // The value takes the config field type, in this case, string
   stringField.setReloadingValue("I am reloading..."); // The value takes the config field type, in this case, string
-  stringField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
+  stringField.setFailedWithError("Oh no, an error occurred with stringField!"); // Takes string for error message
 
   booleanField.setLoading();
   booleanField.setLoadedValue(false); // The value takes the config field type, in this case, boolean
   booleanField.setReloadingValue(true); // The value takes the config field type, in this case, boolean
-  booleanField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
+  booleanField.setFailedWithError(
+    "Oh no, an error occurred with booleanField!"
+  ); // Takes string for error message
 
   dateField.setLoading();
   dateField.setLoadedValue(new Date("2024-01-01")); // The value takes the config field type, in this case, Date. Note that the value saved is a string in format "yyyy-mm-dd"
   dateField.setReloadingValue(new Date("2024-12-31")); // The value takes the config field type, in this case, Date. Note that the value saved is a string in format "yyyy-mm-dd"
-  dateField.setFailedWithError("Oh no, an error occurred!");  // Takes string for error message
+  dateField.setFailedWithError("Oh no, an error occurred with dateField!"); // Takes string for error message
+
+  structField.setLoading();
+  structField.setLoadedValue({
+    // The value takes the config field type, in this case the struct defined in the config
+    structFields: {
+      structField1: "Hello world!",
+      structField2: true,
+    },
+  });
+  structField.setReloadingValue({
+    // The value takes the config field type, in this case the struct defined in the config
+    structFields: {
+      structField1: "I am reloading...",
+      structField2: false,
+    },
+  });
+  structField.setFailedWithError("Oh no, an error occurred with structField!"); // Takes string for error message
 
   /**
    * Examples of executing an event
@@ -151,27 +181,161 @@ const LoadedComprehensiveExample: React.FC<{
     });
   });
 
-  return <>
-    {stringFieldValue}
-    <br />
-    {booleanFieldValue}
-    <br />
-    {numberFieldValue}
-    <br />
-    {dateFieldValue}
-    <br />
-    {timestampFieldValue}
-    <br />
-    {objectSetFieldValue}
-    <br />
-    {stringListFieldValue}
-    <br />
-    {booleanListFieldValue}
-    <br />
-    {numberListFieldValue}
-    <br />
-    {dateListFieldValue}
-    <br />
-    {timestampListFieldValue}
-  </>;
+  return (
+    <>
+      {stringFieldValue}
+      <br />
+      {booleanFieldValue}
+      <br />
+      {numberFieldValue}
+      <br />
+      {dateFieldValue}
+      <br />
+      {timestampFieldValue}
+      <br />
+      {structFieldValue}
+      <br />
+      {objectSetFieldValue}
+      <br />
+      {stringListFieldValue}
+      <br />
+      {booleanListFieldValue}
+      <br />
+      {numberListFieldValue}
+      <br />
+      {dateListFieldValue}
+      <br />
+      {timestampListFieldValue}
+    </>
+  );
+};
+
+const BASIC_CONFIG_DEFINITION = [
+  {
+    fieldId: "stringField",
+    field: {
+      type: "single",
+      fieldValue: {
+        type: "inputOutput",
+        variableType: {
+          type: "string",
+          defaultValue: "test",
+        },
+      },
+      label: "Input string (title)",
+    },
+  },
+  {
+    fieldId: "workshopEvent",
+    field: {
+      type: "single",
+      label: "Events",
+      fieldValue: {
+        type: "event",
+      },
+    },
+  },
+  {
+    fieldId: "listOfField",
+    field: {
+      type: "listOf",
+      label: "A list of fields",
+      addButtonText: "Add another item to these listOf fields",
+      config: [
+        {
+          fieldId: "booleanListField",
+          field: {
+            type: "single",
+            label: "Boolean list in a listOf",
+            fieldValue: {
+              type: "inputOutput",
+              variableType: {
+                type: "boolean-list",
+                defaultValue: [true, false, true, false],
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+] as const satisfies IConfigDefinition;
+
+const ExampleComponent = () => {
+  const workshopContext = useWorkshopContext(BASIC_CONFIG_DEFINITION);
+
+  return visitLoadingState(workshopContext, {
+    loading: () => <>...Render a loading state</>,
+    // Must use <typeof ...> to explicitly delare type for loaded context value
+    succeeded: (
+      loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>
+    ) => (
+      <LoadedExampleComponent loadedWorkshopContext={loadedWorkshopContext} />
+    ),
+    reloading: (_reloadingContext) => <>...Render a reloading state</>,
+    failed: (_error) => <>...Render an error state</>,
+  });
+};
+
+const LoadedExampleComponent: React.FC<{
+  loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>;
+}> = (props) => {
+  const { stringField, workshopEvent, listOfField } =
+    props.loadedWorkshopContext;
+
+  // Example of retrieving single field values.
+  const stringValue: IAsyncValue<string | undefined> = stringField.fieldValue;
+
+  // Examples of setting a single field value
+  const changeStringFieldValue = React.useCallback(() => {
+    stringField.setLoading();
+    stringField.setLoadedValue("Hello world!");
+    stringField.setReloadingValue("Hello world is reloading.");
+    stringField.setFailedWithError("Hello world failed to load.");
+  }, [stringField]);
+
+  // Example of executing event.
+  const executeWorkshopEvent = React.useCallback(() => {
+    // Takes a React MouseEvent, or undefined if not applicable
+    workshopEvent.executeEvent(undefined);
+  }, [workshopEvent]);
+
+  // Examples of setting a single field value inside listOf field values
+  const executeListOfFieldChange = React.useCallback(
+    (index: number) => () => {
+      if (index < listOfField.length) {
+        listOfField[index]?.booleanListField.setLoading();
+        listOfField[index]?.booleanListField.setLoadedValue([true, false]);
+        listOfField[index]?.booleanListField.setReloadingValue([false, true]);
+        listOfField[index]?.booleanListField.setFailedWithError(
+          `Failed to load on listOf layer ${index}`
+        );
+      }
+    },
+    [listOfField]
+  );
+
+  return (
+    <div>
+      {JSON.stringify(stringValue)}
+      <button onClick={changeStringFieldValue}>
+        Click me to change stringField's value!
+      </button>
+      <br />
+      <button onClick={executeWorkshopEvent}>
+        Click me to execute a workshop event!
+      </button>
+      <br />
+      {listOfField.map((listItem, index) => {
+        return (
+          <>
+            {JSON.stringify(listItem.booleanListField.fieldValue)}
+            <button onClick={executeListOfFieldChange(index)}>
+              Click me to change a listOfField's value for index {index}!
+            </button>
+          </>
+        );
+      })}
+    </div>
+  );
 };
