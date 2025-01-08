@@ -12,10 +12,14 @@
  * limitations under the License.
  */
 
-
-import { asyncValueLoaded, IAsyncValue, IConfigDefinition } from "./types";
+import { asyncValueLoaded, IConfigDefinition } from "./types";
 import { assertNever, formatDate } from "./utils";
-import { IConfigValueMap, IVariableType_WithDefaultValue, IVariableValue } from "./internal";
+import {
+  IConfigValueMap,
+  IVariableType_WithDefaultValue,
+  IVariableValue,
+  StructValue,
+} from "./internal";
 
 /**
  * Takes the configDefinition and pulls out the default values, creating a default config values map.
@@ -32,8 +36,10 @@ export function createDefaultConfigValueMap(
           case "inputOutput":
             configValueMap[configField.fieldId] = {
               type: "single",
-              value: variableTypeWithDefaultValueToValue(
-                configField.field.fieldValue.variableType
+              value: asyncValueLoaded(
+                variableTypeWithDefaultValueToValue(
+                  configField.field.fieldValue.variableType
+                )
               ),
             };
             return;
@@ -65,13 +71,24 @@ export function createDefaultConfigValueMap(
 
 function variableTypeWithDefaultValueToValue(
   variableType: IVariableType_WithDefaultValue
-): IAsyncValue<IVariableValue | undefined> {
+): IVariableValue | undefined {
   // For date and date-list variable types, need to convert from Date to string and Date[] to string[]
   // As we will save date values as strings in format "yyyy-mm-dd"
   if (variableType.type === "date" && variableType.defaultValue != null) {
-    return asyncValueLoaded(formatDate(variableType.defaultValue));
-  } else if (variableType.type === "date-list" && variableType.defaultValue != null) {
-    return asyncValueLoaded(variableType.defaultValue.map(formatDate));
-  } 
-  return asyncValueLoaded(variableType.defaultValue);
+    return formatDate(variableType.defaultValue);
+  } else if (
+    variableType.type === "date-list" &&
+    variableType.defaultValue != null
+  ) {
+    return variableType.defaultValue.map(formatDate);
+  } else if (variableType.type === "struct") {
+    const structFields = variableType.structFieldTypes.reduce((acc, structFieldType) => {
+      acc[structFieldType.fieldId] = variableTypeWithDefaultValueToValue(structFieldType.fieldType);
+      return acc;
+    }, {} as StructValue["structFields"]);
+    return {
+      structFields,
+    };
+  }
+  return variableType.defaultValue;
 }
