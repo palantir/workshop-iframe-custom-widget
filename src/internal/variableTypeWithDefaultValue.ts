@@ -27,7 +27,7 @@ export type IVariableType_WithDefaultValue =
   | IVariableType_NumberList_WithDefaultValue
   | IVariableType_DateList_WithDefaultValue
   | IVariableType_TimestampList_WithDefaultValue
-  // | IVariableType_Struct // TODO: Struct support is coming, but is not fully supported yet
+  | IVariableType_Struct_WithDefaultValue
   | IVariableType_ObjectSet_WithDefaultValue;
 
 // Workshop only supports struct fields containing the following types. Nested structs are not yet supported

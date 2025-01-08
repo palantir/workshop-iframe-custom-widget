@@ -17,10 +17,13 @@ import {
   IVariableValue,
   IVariableType_WithDefaultValue,
   IVariableToSet,
+  IVariableType_Struct_WithDefaultValue,
+  StructValue,
+  StructValueWithObjectRids,
 } from "../internal";
 import { IAsyncValue } from "../types";
 import { isOntologyObject } from "../types/ontologyObject";
-import { VariableTypeToValueTypeToSet } from "../types/workshopContext";
+import { StructVariableValueTypeToSet, VariableTypeToValueTypeToSet } from "../types/workshopContext";
 import { assertNever, formatDate } from "../utils";
 
 // Helpers for transformConfigToWorkshopContext
@@ -102,6 +105,7 @@ function isDate(val: unknown): val is Date {
  * - for objectSet variables, extract the primaryKeys, which is OSDK's preferred format to load objects with and cap to first 10,000 primaryKeys
  * - for date variables, convert from Date value to string value in format "yyyy-mm-dd"
  * - for date array variables, convert from Date[] value to string[] in format "yyyy-mm-dd" per entry
+ * - for struct variables, ensure every struct field has been transformed
  */
 export function maybeTransformValueToSetToValueMapTypes<
   V extends IVariableType_WithDefaultValue
@@ -142,8 +146,28 @@ export function maybeTransformValueToSetToValueMapTypes<
     value.every(isDate)
   ) {
     return value.map(formatDate);
+  } else if (isStruct(value)) {
+    if (variableType.type === "struct") {
+      const structFields = variableType.structFieldTypes.reduce((acc, structFieldType) => {
+        const structFieldValue = value.structFields[structFieldType.fieldId];
+        acc[structFieldType.fieldId] = maybeTransformValueToSetToValueMapTypes(structFieldType.fieldType, structFieldValue);
+        return acc;
+      }, {} as StructValue["structFields"]);
+      return {
+        structFields
+      }
+    } else { 
+      return undefined;
+    }
   }
   return value;
+}
+
+/**
+ * Given an unknown param v, return true only if v can be attributed to be a struct variable value. 
+ */
+function isStruct<T extends IVariableType_Struct_WithDefaultValue>(v: unknown): v is StructVariableValueTypeToSet<T> {
+  return typeof v === "object" && v != null && "structFields" in v && v.structFields != null && typeof v.structFields === "object";
 }
 
 /**
@@ -172,6 +196,19 @@ export function maybeTransformValueToSetToWorkshopValue<
     value.every(isDate)
   ) {
     return value.map(formatDate);
+  } else if (isStruct(value)) {
+    if (variableType.type === "struct") {
+      const structFields = variableType.structFieldTypes.reduce((acc, structFieldType) => {
+        const structFieldValue = value.structFields[structFieldType.fieldId];
+        acc[structFieldType.fieldId] = maybeTransformValueToSetToWorkshopValue(structFieldType.fieldType, structFieldValue);
+        return acc;
+      }, {} as StructValueWithObjectRids["structFields"]);
+      return {
+        structFields
+      }
+    } else {
+      return undefined;
+    }
   }
   return value;
 }

@@ -13,6 +13,7 @@ limitations under the License.
  */
 import {
   IStructVariableFieldTypes_WithDefaultValue,
+  IVariableType_Struct_WithDefaultValue,
   IVariableType_WithDefaultValue,
 } from "../internal";
 import { IConfigDefinition, IConfigDefinitionField } from "./configDefinition";
@@ -137,16 +138,18 @@ export type VariableTypeToValueTypeToSet<
       type: "struct";
       structFieldTypes: readonly IStructVariableFieldTypes_WithDefaultValue[];
     }
-  ? {
-      structFields: {
-        [K in T["structFieldTypes"][number]["fieldId"]]:
-          | VariableTypeToValueTypeToSet<
+  ? StructVariableValueTypeToSet<T>
+  : never;
+
+export type StructVariableValueTypeToSet<T extends IVariableType_Struct_WithDefaultValue> = {
+  structFields: {
+    [K in T["structFieldTypes"][number]["fieldId"]]: 
+      | VariableTypeToValueTypeToSet<
               ExtractFieldType<T["structFieldTypes"], K>
             >
           | undefined;
-      };
-    }
-  : never;
+  }
+}
 
 /**
  * Mapped type to extract field types on structs.

@@ -35,7 +35,7 @@ See [Examples.tsx](./src/example/Example.tsx) for a complete example, and see [E
 A basic config definition:
 
 ```typescript
-export const BASIC_CONFIG_DEFINITION = [
+const BASIC_CONFIG_DEFINITION = [
   {
     fieldId: "stringField",
     field: {
@@ -96,45 +96,81 @@ Here is an example React component that shows how to call `useWorkshopContext` w
 const ExampleComponent = () => {
   const workshopContext = useWorkshopContext(BASIC_CONFIG_DEFINITION);
 
-  if (isAsyncValue_Loading(workshopContext)) {
-    // Render a loading state
-  } else if (isAsyncValue_Loaded(workshopContext)) {
-    // Must explicitly declare type for the loaded context value
-    const loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION> = workshopContext.value;
+  return visitLoadingState(workshopContext, {
+    loading: () => <>...Render a loading state</>,
+    succeeded: (
+      // Must use <typeof ...> to explicitly delare type for loaded context value
+      loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>
+    ) => (
+      <LoadedExampleComponent loadedWorkshopContext={loadedWorkshopContext} />
+    ),
+    reloading: (_reloadingContext) => <>...Render a reloading state</>,
+    failed: (_error) => <>...Render an error state</>,
+  });
+};
 
-    const { stringField, workshopEvent, listOfField } = loadedWorkshopContext;
+const LoadedExampleComponent: React.FC<{
+  // Must use <typeof ...> to explicitly delare type for loaded context value
+  loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>;
+}> = (props) => {
+  const { stringField, workshopEvent, listOfField } =
+    props.loadedWorkshopContext;
 
-    // Examples of retrieving single field values.
-    const stringValue: IAsyncValue<string | undefined> = stringField.fieldValue;
+  // Example of retrieving single field values.
+  const stringValue: IAsyncValue<string | undefined> = stringField.fieldValue;
 
-    // Examples of retrieving listOf field values.
-    listOfField.forEach(listItem => {
-        const booleanListValue: IAsyncValue<boolean[] | undefined> = listItem.booleanListField.fieldValue;
-    });
-
-    // Examples of setting single field values.
+  // Examples of setting a single field value
+  const changeStringFieldValue = React.useCallback(() => {
     stringField.setLoading();
     stringField.setLoadedValue("Hello world!");
     stringField.setReloadingValue("Hello world is reloading.");
     stringField.setFailedWithError("Hello world failed to load.");
+  }, [stringField]);
 
-    // Examples of setting listOf field values.
-    listOfField.forEach((listItem, index) => {
-        listItem.booleanListField.setLoading();
-        listItem.booleanListField.setLoadedValue([true, false]);
-        listItem.booleanListField.setReloadingValue([false, true]);
-        listItem.booleanListField.setFailedWithError(`Failed to load on listOf layer ${index}`);
-    });
-
-
-    // Example of executing event. Takes a React MouseEvent, or undefined if not applicable
+  // Example of executing event.
+  const executeWorkshopEvent = React.useCallback(() => {
+    // Takes a React MouseEvent, or undefined if not applicable
     workshopEvent.executeEvent(undefined);
+  }, [workshopEvent]);
 
+  // Examples of setting a single field value inside listOf field values
+  const executeListOfFieldChange = React.useCallback(
+    (index: number) => () => {
+      if (index < listOfField.length) {
+        listOfField[index]?.booleanListField.setLoading();
+        listOfField[index]?.booleanListField.setLoadedValue([true, false]);
+        listOfField[index]?.booleanListField.setReloadingValue([false, true]);
+        listOfField[index]?.booleanListField.setFailedWithError(
+          `Failed to load on listOf layer ${index}`
+        );
+      }
+    },
+    [listOfField]
+  );
 
-    return <div>Render something here.</div>;
-  } else if (isAsyncValue_FailedLoading(workshopContext)) {
-    // Render a failure state
-  }
+  return (
+    <div>
+      {JSON.stringify(stringValue)}
+      <button onClick={changeStringFieldValue}>
+        Click me to change stringField's value!
+      </button>
+      <br />
+      <button onClick={executeWorkshopEvent}>
+        Click me to execute a workshop event!
+      </button>
+      <br />
+      {listOfField.map((listItem, index) => {
+        return (
+          <>
+            {JSON.stringify(listItem.booleanListField.fieldValue)}
+            <button onClick={executeListOfFieldChange(index)}>
+              Click me to change a listOfField's value for index {index}!
+            </button>
+          </>
+        );
+      })}
+    </div>
+  );
 };
 ```
 

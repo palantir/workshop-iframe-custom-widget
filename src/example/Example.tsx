@@ -13,10 +13,7 @@ limitations under the License.
  */
 import React from "react";
 import { COMPREHENSIVE_EXAMPLE_CONFIG } from "./ExampleConfig";
-import {
-  IAsyncValue,
-  visitLoadingState,
-} from "../types/loadingState";
+import { IAsyncValue, visitLoadingState } from "../types/loadingState";
 import { IWorkshopContext } from "../types/workshopContext";
 import { useWorkshopContext } from "../";
 import { ObjectSetLocators } from "../types";
@@ -31,9 +28,13 @@ export const Example = () => {
   // Use a visitor function to render based on the async status of the workshop context object
   return visitLoadingState(workshopContext, {
     loading: () => <>Loading...</>,
-    succeeded: loadedContext => <LoadedComprehensiveExample loadedWorkshopContext={loadedContext} />, 
-    reloading: _reloadingContext => <>Reloading...</>,
-    failed: _error => <>Error...</>, 
+    succeeded: (
+      loadedContext: IWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>
+    ) => <LoadedComprehensiveExample loadedWorkshopContext={loadedContext} />,
+    reloading: (
+      _reloadingContext: IWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>
+    ) => <>Reloading...</>,
+    failed: (_error) => <>Error...</>,
   });
 };
 
@@ -49,6 +50,7 @@ const LoadedComprehensiveExample: React.FC<{
     numberField,
     dateField,
     timestampField,
+    structField,
     stringListField,
     objectSetField,
     event,
@@ -72,6 +74,15 @@ const LoadedComprehensiveExample: React.FC<{
   const dateFieldValue: IAsyncValue<string | undefined> = dateField.fieldValue;
   const timestampFieldValue: IAsyncValue<Date | undefined> =
     timestampField.fieldValue;
+  const structFieldValue: IAsyncValue<
+    | {
+        structFields: {
+          structField1: string | undefined;
+          structField2: boolean | undefined;
+        };
+      }
+    | undefined
+  > = structField.fieldValue;
 
   const objectSetFieldValue: IAsyncValue<ObjectSetLocators | undefined> =
     objectSetField.fieldValue;
@@ -79,13 +90,13 @@ const LoadedComprehensiveExample: React.FC<{
   //      const primaryKeys: string[] = isAsyncValueLoaded(objectSetFieldValue) ? objectSetFieldValue.value.primaryKeys : [];
   //      const housesfilteredByPrimaryKey: ObjectSet<RottenTomatoesMovies> = client.ontology.objects.RottenTomatoesMovies.where(query => query.rottenTomatoesLink.containsAnyTerm(primaryKeys.join(" ")));
 
-  const stringListFieldValue: IAsyncValue<string[] | undefined>  =
+  const stringListFieldValue: IAsyncValue<string[] | undefined> =
     stringListField.fieldValue;
   const booleanListFieldValue: IAsyncValue<boolean[] | undefined> =
     booleanListField.fieldValue;
   const numberListFieldValue: IAsyncValue<number[] | undefined> =
     numberListField.fieldValue;
-  // date arrays are stored as a string array with every entry in the format "yyyy-mm-dd" 
+  // date arrays are stored as a string array with every entry in the format "yyyy-mm-dd"
   const dateListFieldValue: IAsyncValue<string[] | undefined> =
     dateListField.fieldValue;
   const timestampListFieldValue: IAsyncValue<Date[] | undefined> =
@@ -97,17 +108,36 @@ const LoadedComprehensiveExample: React.FC<{
   stringField.setLoading();
   stringField.setLoadedValue("Hello world!!!"); // The value takes the config field type, in this case, string
   stringField.setReloadingValue("I am reloading..."); // The value takes the config field type, in this case, string
-  stringField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
+  stringField.setFailedWithError("Oh no, an error occurred with stringField!"); // Takes string for error message
 
   booleanField.setLoading();
   booleanField.setLoadedValue(false); // The value takes the config field type, in this case, boolean
   booleanField.setReloadingValue(true); // The value takes the config field type, in this case, boolean
-  booleanField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
+  booleanField.setFailedWithError(
+    "Oh no, an error occurred with booleanField!"
+  ); // Takes string for error message
 
   dateField.setLoading();
   dateField.setLoadedValue(new Date("2024-01-01")); // The value takes the config field type, in this case, Date. Note that the value saved is a string in format "yyyy-mm-dd"
   dateField.setReloadingValue(new Date("2024-12-31")); // The value takes the config field type, in this case, Date. Note that the value saved is a string in format "yyyy-mm-dd"
-  dateField.setFailedWithError("Oh no, an error occurred!");  // Takes string for error message
+  dateField.setFailedWithError("Oh no, an error occurred with dateField!"); // Takes string for error message
+
+  structField.setLoading();
+  structField.setLoadedValue({
+    // The value takes the config field type, in this case the struct defined in the config
+    structFields: {
+      structField1: "Hello world!",
+      structField2: true,
+    },
+  });
+  structField.setReloadingValue({
+    // The value takes the config field type, in this case the struct defined in the config
+    structFields: {
+      structField1: "I am reloading...",
+      structField2: false,
+    },
+  });
+  structField.setFailedWithError("Oh no, an error occurred with structField!"); // Takes string for error message
 
   /**
    * Examples of executing an event
@@ -151,27 +181,32 @@ const LoadedComprehensiveExample: React.FC<{
     });
   });
 
-  return <>
-    {stringFieldValue}
-    <br />
-    {booleanFieldValue}
-    <br />
-    {numberFieldValue}
-    <br />
-    {dateFieldValue}
-    <br />
-    {timestampFieldValue}
-    <br />
-    {objectSetFieldValue}
-    <br />
-    {stringListFieldValue}
-    <br />
-    {booleanListFieldValue}
-    <br />
-    {numberListFieldValue}
-    <br />
-    {dateListFieldValue}
-    <br />
-    {timestampListFieldValue}
-  </>;
+  return (
+    <>
+      {stringFieldValue}
+      <br />
+      {booleanFieldValue}
+      <br />
+      {numberFieldValue}
+      <br />
+      {dateFieldValue}
+      <br />
+      {timestampFieldValue}
+      <br />
+      {structFieldValue}
+      <br />
+      {objectSetFieldValue}
+      <br />
+      {stringListFieldValue}
+      <br />
+      {booleanListFieldValue}
+      <br />
+      {numberListFieldValue}
+      <br />
+      {dateListFieldValue}
+      <br />
+      {timestampListFieldValue}
+    </>
+  );
 };
+
