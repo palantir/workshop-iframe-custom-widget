@@ -110,6 +110,9 @@ export function maybeTransformValueToSetToValueMapTypes<
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableValue | undefined {
   if (Array.isArray(value) && value.every(isOntologyObject)) {
+    if (value.length === 0 && variableType.type !== "objectSet") {
+      return [];
+    }
     if (
       value.every(
         (ontologyObject) => typeof ontologyObject.$primaryKey === "string"
@@ -159,6 +162,9 @@ export function maybeTransformValueToSetToWorkshopValue<
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableToSet | undefined {
   if (Array.isArray(value) && value.every(isOntologyObject)) {
+    if (value.length === 0 && variableType.type !== "objectSet") {
+      return [];
+    }
     return {
       objectRids: value
         .slice(0, MAX_OBJECTS)
