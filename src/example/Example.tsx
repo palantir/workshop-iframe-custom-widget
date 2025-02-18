@@ -51,6 +51,7 @@ const LoadedComprehensiveExample: React.FC<{
     timestampField,
     stringListField,
     objectSetField,
+    temporaryObjectSetRidField,
     event,
     booleanListField,
     numberListField,
@@ -73,11 +74,12 @@ const LoadedComprehensiveExample: React.FC<{
   const timestampFieldValue: IAsyncValue<Date | undefined> =
     timestampField.fieldValue;
 
+  // Use https://www.npmjs.com/package/@osdk/client < 2.0 to query Ontology objects
   const objectSetFieldValue: IAsyncValue<ObjectSetLocators | undefined> =
     objectSetField.fieldValue;
-  // Example usage of objectSetFieldValue's primary keys to query for objects using osdk's client:
-  //      const primaryKeys: string[] = isAsyncValueLoaded(objectSetFieldValue) ? objectSetFieldValue.value.primaryKeys : [];
-  //      const housesfilteredByPrimaryKey: ObjectSet<RottenTomatoesMovies> = client.ontology.objects.RottenTomatoesMovies.where(query => query.rottenTomatoesLink.containsAnyTerm(primaryKeys.join(" ")));
+
+  // Use https://www.npmjs.com/package/@osdk/client version >= 2.0 to query Ontology objects
+  const temporaryObjectSetRidFieldValue: IAsyncValue<string | undefined> = temporaryObjectSetRidField.fieldValue;
 
   const stringListFieldValue: IAsyncValue<string[] | undefined>  =
     stringListField.fieldValue;
@@ -163,6 +165,8 @@ const LoadedComprehensiveExample: React.FC<{
     {timestampFieldValue}
     <br />
     {objectSetFieldValue}
+    <br /> 
+    {temporaryObjectSetRidFieldValue}
     <br />
     {stringListFieldValue}
     <br />

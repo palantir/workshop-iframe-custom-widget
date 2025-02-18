@@ -84,6 +84,8 @@ export type VariableTypeToValueType<T extends IVariableType_WithDefaultValue> =
     ? Date
     : T extends { type: "objectSet" }
     ? ObjectSetLocators
+    : T extends { type: "temporaryObjectSetRid" }
+    ? string
     : T extends { type: "string-list" }
     ? string[]
     : T extends { type: "boolean-list" }
@@ -125,6 +127,8 @@ export type VariableTypeToValueTypeToSet<
   ? Date
   : T extends { type: "objectSet" }
   ? OntologyObject[]
+  : T extends { type: "temporaryObjectSetRid" }
+  ? string
   : T extends { type: "string-list" }
   ? string[]
   : T extends { type: "boolean-list" }
