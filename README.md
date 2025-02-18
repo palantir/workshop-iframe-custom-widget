@@ -166,6 +166,7 @@ const ExampleComponent = () => {
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { IWorkshopContext, useWorkshopContext } from "@osdk/workshop-iframe-custom-widget";
 import React from "react";
+import { HomeComponent, RouteOneComponent, RouteTwoComponent } from "./routes";
 
   export const RouterProviderWrapperWithWorkshopContext = () => {
     const workshopContext = useWorkshopContext(CONFIG);
@@ -182,9 +183,9 @@ import React from "react";
         [
           { path: "/", element: <HomeComponent loadedContext={loadedContext}/>}, 
           { path: "/route1", element: <RouteOneComponent loadedContext={loadedContext}/>}, 
+          { path: "/route2", element: <RouteTwoComponent loadedContext={loadedContext}/>}, 
           ...,
-        ],
-        ...
+        ]
       )
       return <RouterProvider router={router} />;
   }
