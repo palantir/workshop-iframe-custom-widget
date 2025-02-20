@@ -109,6 +109,11 @@ export function maybeTransformValueToSetToValueMapTypes<
   variableType: IVariableType_WithDefaultValue,
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableValue | undefined {
+  // Empty primitive arrays 
+  if (Array.isArray(value) && value.length === 0 && variableType.type !== "objectSet") {
+    return [];
+  }
+  // OntologyObject arrays
   if (Array.isArray(value) && value.every(isOntologyObject)) {
     if (
       value.every(
@@ -158,6 +163,11 @@ export function maybeTransformValueToSetToWorkshopValue<
   variableType: IVariableType_WithDefaultValue,
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableToSet | undefined {
+  // Empty primitve arrays 
+  if (Array.isArray(value) && value.length === 0 && variableType.type !== "objectSet") {
+    return [];
+  }
+  // OntologyObject arrays
   if (Array.isArray(value) && value.every(isOntologyObject)) {
     return {
       objectRids: value
