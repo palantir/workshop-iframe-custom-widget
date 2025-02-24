@@ -172,7 +172,7 @@ import { HomeComponent, RouteOneComponent, RouteTwoComponent } from "./routes";
     const workshopContext = useWorkshopContext(CONFIG);
     return visitLoadingState(workshopContext, {
       loading: () => <>Loading...</>,
-      succeeded: loadedContext => <LoadedComprehensiveExample loadedContext={loadedContext} />, 
+      succeeded: loadedContext => <LoadedRouterProviderWrapperWithWorkshopContext loadedContext={loadedContext} />, 
       reloading: _reloadingContext => <>Reloading...</>,
       failed: _error => <>Error...</>, 
     })
