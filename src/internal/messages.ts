@@ -54,6 +54,7 @@ export interface ISendConfigToWorkshopMessage {
   type: MESSAGE_TYPES_TO_WORKSHOP.SENDING_CONFIG;
   config: IConfigDefinition;
   pathname?: string; 
+  packageVersion?: string;
 }
 
 /**
