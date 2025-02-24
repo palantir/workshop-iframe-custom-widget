@@ -18,6 +18,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
     fieldId: "stringField",
     field: {
       type: "single",
+      label: "String field",
       fieldValue: {
         type: "inputOutput",
         variableType: {
@@ -25,14 +26,13 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
           defaultValue: "test",
         },
       },
-      label: "Input string (title)",
     },
   },
   {
     fieldId: "numberField",
     field: {
       type: "single",
-      label: "Input number",
+      label: "Number field",
       fieldValue: {
         type: "inputOutput",
         variableType: {
@@ -46,7 +46,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
     fieldId: "booleanField",
     field: {
       type: "single",
-      label: "Input boolean",
+      label: "Boolean field",
       fieldValue: {
         type: "inputOutput",
         variableType: {
@@ -60,7 +60,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
     fieldId: "dateField",
     field: {
       type: "single",
-      label: "Input date",
+      label: "Date field",
       fieldValue: {
         type: "inputOutput",
         variableType: {
@@ -74,7 +74,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
     fieldId: "timestampField",
     field: {
       type: "single",
-      label: "Input timestamp",
+      label: "Timestamp field",
       fieldValue: {
         type: "inputOutput",
         variableType: {
@@ -88,10 +88,11 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
     fieldId: "objectSetField",
     field: {
       type: "single",
-      label: "Input object set",
+      label: "Object set field (limited to first 10,000)",
       fieldValue: {
         type: "inputOutput",
         variableType: {
+           // Consider using temporaryObjectSetRid instead, which is not limited to first 10,000 objects
           type: "objectSet",
           objectTypeId: "rotten-tomatoes-movies",
           defaultValue: {
@@ -101,6 +102,20 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
         },
       },
     },
+  },
+  {
+    // Only compatible with https://www.npmjs.com/package/@osdk/client > 2.0
+    fieldId: "temporaryObjectSetRidField", 
+    field: {
+      type: "single", 
+      label: "Object set field (via temporary object set rid)", 
+      fieldValue: {
+        type: "inputOutput", 
+        variableType: {
+          type: "temporaryObjectSetRid", 
+        }
+      }
+    }
   },
   {
     fieldId: "stringListField",

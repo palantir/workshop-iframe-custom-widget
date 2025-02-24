@@ -96,59 +96,110 @@ Here is an example React component that shows how to call `useWorkshopContext` w
 const ExampleComponent = () => {
   const workshopContext = useWorkshopContext(BASIC_CONFIG_DEFINITION);
 
-  if (isAsyncValue_Loading(workshopContext)) {
-    // Render a loading state
-  } else if (isAsyncValue_Loaded(workshopContext)) {
+  return visitLoadingState(workshopContext, {
+    loading: () => <>Loading...</>,
     // Must explicitly declare type for the loaded context value
-    const loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION> = workshopContext.value;
+    succeeded: loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>  => {
+      const { stringField, workshopEvent, listOfField } = loadedWorkshopContext;
 
-    const { stringField, workshopEvent, listOfField } = loadedWorkshopContext;
+      // Examples of retrieving single field values.
+      const stringValue: IAsyncValue<string | undefined> = stringField.fieldValue;
 
-    // Examples of retrieving single field values.
-    const stringValue: IAsyncValue<string | undefined> = stringField.fieldValue;
+      // Examples of retrieving listOf field values.
+      listOfField.forEach(listItem => {
+          const booleanListValue: IAsyncValue<boolean[] | undefined> = listItem.booleanListField.fieldValue;
+      });
 
-    // Examples of retrieving listOf field values.
-    listOfField.forEach(listItem => {
-        const booleanListValue: IAsyncValue<boolean[] | undefined> = listItem.booleanListField.fieldValue;
-    });
+      // Examples of setting single field values.
+      stringField.setLoading();
+      stringField.setLoadedValue("Hello world!");
+      stringField.setReloadingValue("Hello world is reloading.");
+      stringField.setFailedWithError("Hello world failed to load.");
 
-    // Examples of setting single field values.
-    stringField.setLoading();
-    stringField.setLoadedValue("Hello world!");
-    stringField.setReloadingValue("Hello world is reloading.");
-    stringField.setFailedWithError("Hello world failed to load.");
-
-    // Examples of setting listOf field values.
-    listOfField.forEach((listItem, index) => {
-        listItem.booleanListField.setLoading();
-        listItem.booleanListField.setLoadedValue([true, false]);
-        listItem.booleanListField.setReloadingValue([false, true]);
-        listItem.booleanListField.setFailedWithError(`Failed to load on listOf layer ${index}`);
-    });
-
-
-    // Example of executing event. Takes a React MouseEvent, or undefined if not applicable
-    workshopEvent.executeEvent(undefined);
+      // Examples of setting listOf field values.
+      listOfField.forEach((listItem, index) => {
+          listItem.booleanListField.setLoading();
+          listItem.booleanListField.setLoadedValue([true, false]);
+          listItem.booleanListField.setReloadingValue([false, true]);
+          listItem.booleanListField.setFailedWithError(`Failed to load on listOf layer ${index}`);
+      });
 
 
-    return <div>Render something here.</div>;
-  } else if (isAsyncValue_FailedLoading(workshopContext)) {
-    // Render a failure state
-  }
+      // Example of executing event. Takes a React MouseEvent, or undefined if not applicable
+      workshopEvent.executeEvent(undefined);
+
+
+      return <div>Render something here.</div>;
+    }
+    reloading: _reloadingContext => <>Reloading...</>,
+    failed: _error => <>Error...</>, 
+  });
 };
 ```
 
 ## FAQ's
 
-1. Why is the context object returned by `useWorkshopContext` wrapped in an async loading state?
+1. For Ontology object set fields, should I use `objectSet` or `temporaryObjectSetRid`? 
+  
+  It depends on what version of [@osdk/client](https://www.npmjs.com/package/@osdk/client) you are using to query the Ontology from your app. You should use `objectSet`, which gives you the value of a objectTypeId with up to 10,000 primary keys if you are using [@osdk/client](https://www.npmjs.com/package/@osdk/client) version < 2.0, and `temporaryObjectSetRid` if you are using [@osdk/client](https://www.npmjs.com/package/@osdk/client) >= 2.0 as higher versions have the capabilities to materialize object sets from a temporary objectSet RID, and vice versa generate a temporary objectSet RID given a set of Ontology objects. Using `temporaryObjectSetRid` also removes the limitations of being restricted to single object type object sets, and the 10,000 limit. 
+
+  Note that we will soon be making a major bump to 2.0, due to this package deprecating the option to use `objectSet` fields, as we encourage consumers to move to using `temporaryObjectSetRid` to query from the Ontology allowing the ability to pass to and from Workshop object sets containing multi-object type object sets, and object sets of size over 10,000. 
+
+2. Where in my app should I call `useWorkshopContext`? 
+
+  `useWorkshopContext` should be called from the route that you plan to embed in Workshop. Each call of `useWorkshopContext` should map to one instance of the bidirectional iframe widget. For example, if you would like to set up your app such that route `/app1` and route `/app2` are each two distinct custom widgets, you should call `useWorkshopContext` per component rendered at those routes (a total of two calls). 
+  
+  Alternatively, if you want to set up your app such that your widget navigates to multiple routes, you will want to call `useWorkshopContext` once in the main component and pass the context fields to each route. An example of this is below: 
+
+  In main.tsx: 
+  ```typescript
+  import ReactDOM from "react-dom/client";
+  import { RouterProviderWrapperWithWorkshopContext } from "./MainComponent";
+   
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+  <RouterProviderWrapperWithWorkshopContext />,
+);
+  ```
+
+  In RouterProviderWrapperWithWorkshopContext.tsx: 
+  ```typescript
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { IWorkshopContext, useWorkshopContext } from "@osdk/workshop-iframe-custom-widget";
+import React from "react";
+import { HomeComponent, RouteOneComponent, RouteTwoComponent } from "./routes";
+
+  export const RouterProviderWrapperWithWorkshopContext = () => {
+    const workshopContext = useWorkshopContext(CONFIG);
+    return visitLoadingState(workshopContext, {
+      loading: () => <>Loading...</>,
+      succeeded: loadedContext => <LoadedComprehensiveExample loadedContext={loadedContext} />, 
+      reloading: _reloadingContext => <>Reloading...</>,
+      failed: _error => <>Error...</>, 
+    })
+  }
+
+  const LoadedRouterProviderWrapperWithWorkshopContext = (props: { loadedContext: IWorkshopContext<typeof CONFIG> }) => {
+      const router = createBrowserRouter(
+        [
+          { path: "/", element: <HomeComponent loadedContext={loadedContext}/>}, 
+          { path: "/route1", element: <RouteOneComponent loadedContext={loadedContext}/>}, 
+          { path: "/route2", element: <RouteTwoComponent loadedContext={loadedContext}/>}, 
+          ...,
+        ]
+      )
+      return <RouterProvider router={router} />;
+  }
+  ```
+
+3. Why is the context object returned by `useWorkshopContext` wrapped in an async loading state?
 
    Please refer to the diagram Figure 1.a and 1.b. When your custom app is iframed inside of Workshop, the context object will not exist until Workshop accepts the config parameter and as such will be in a loading state until it is accepted. It may also be rejected by Workshop and as such will be wrapped in a failed to load async state with an accompanying error message.
 
-2. Why should I provide default values when defining the config passed to `useWorkshopContext`?
+4. Why should I provide default values when defining the config passed to `useWorkshopContext`?
 
    During development when your custom app is not iframed in Workshop, its not receiving any values and as such it would make development difficult if all you had to work with were a forever loading context object or a loaded context object with null values. Allowing you to provide default values when defining the config that gets translated to the context object returned by `useWorkshopContext` helps you during development when the app is not being iframed, as the plugin will detect whether your app is being iframed and if not, will return a loaded context object populated with your default values.
 
-3. Why is each value inside the context object returned by `useWorkshopContext` wrapped in with an async loading state?
+5. Why is each value inside the context object returned by `useWorkshopContext` wrapped in with an async loading state?
 
    Workshop's variables each have an async loading state, as variables could come from asynchronous execution, such as a function that takes 10 seconds to return a value. Having a 1:1 match between the types in the context object and Workshop means that the two have a consistent view of variable values. If a variable in Workshop goes into a loading state or fails to load, this async state is passed to the iframed app allowing you to decide how to handle cases where one of the parameters is not available or currently might be re-loading. For example when implementing a custom submission form, you might want to disable the submission button if some of the inputs to your form hasn't loaded yet or are currently re-loading.
    

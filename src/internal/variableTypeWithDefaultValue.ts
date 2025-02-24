@@ -28,7 +28,8 @@ export type IVariableType_WithDefaultValue =
   | IVariableType_DateList_WithDefaultValue
   | IVariableType_TimestampList_WithDefaultValue
   // | IVariableType_Struct // TODO: Struct support is coming, but is not fully supported yet
-  | IVariableType_ObjectSet_WithDefaultValue;
+  | IVariableType_ObjectSet_WithDefaultValue
+  | IVariableType_TemporaryObjectSetRidWithDefaultValue; 
 
 // Workshop only supports struct fields containing the following types. Nested structs are not yet supported
 export type IStructVariableFieldType_WithDefaultValue =
@@ -42,7 +43,8 @@ export type IStructVariableFieldType_WithDefaultValue =
   | IVariableType_NumberList_WithDefaultValue
   | IVariableType_DateList_WithDefaultValue
   | IVariableType_TimestampList_WithDefaultValue
-  | IVariableType_ObjectSet_WithDefaultValue;
+  | IVariableType_ObjectSet_WithDefaultValue
+  | IVariableType_TemporaryObjectSetRidWithDefaultValue;
 
 export interface IVariableType_String_WithDefaultValue {
   type: "string";
@@ -108,4 +110,9 @@ export interface IVariableType_ObjectSet_WithDefaultValue {
   type: "objectSet";
   objectTypeId: string;
   defaultValue?: ObjectSetLocators;
+}
+
+export interface IVariableType_TemporaryObjectSetRidWithDefaultValue {
+  type: "temporaryObjectSetRid"; 
+  defaultValue?: string;
 }
