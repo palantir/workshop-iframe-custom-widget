@@ -114,5 +114,6 @@ export interface IVariableType_ObjectSet_WithDefaultValue {
 
 export interface IVariableType_TemporaryObjectSetRidWithDefaultValue {
   type: "temporaryObjectSetRid"; 
+  objectTypeId?: string;
   defaultValue?: string;
 }

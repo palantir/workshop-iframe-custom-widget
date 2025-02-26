@@ -113,6 +113,7 @@ export const COMPREHENSIVE_EXAMPLE_CONFIG = [
         type: "inputOutput", 
         variableType: {
           type: "temporaryObjectSetRid", 
+          objectTypeId: "rotten-tomatoes-movies", 
         }
       }
     }
