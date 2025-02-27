@@ -29,9 +29,7 @@ import {
   IMessageFromWorkshop,
 } from "./internal";
 import { IConfigDefinition } from "./types";
-import * as fs from "fs";
-import * as path from "path";
-import { fileURLToPath } from 'url';
+import { version } from "../package.json";
 
 /**
  * Given the definition of config fields, returns a context object in an async wrapper with properties of the requested fields' IDs,
@@ -99,18 +97,11 @@ export function useWorkshopContext<T extends IConfigDefinition>(
 
   // Once on mount
   React.useEffect(() => {
-    // Retrieve verion from package.json
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const packageJsonPath = path.resolve(__dirname, 'package.json');
-    const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
-    const packageJson = JSON.parse(packageJsonContent);
-
     sendMessageToWorkshop({
       type: MESSAGE_TYPES_TO_WORKSHOP.SENDING_CONFIG,
       config: configFields,
       pathname: window.location.pathname,
-      packageVersion: packageJson.version,
+      packageVersion: version,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
