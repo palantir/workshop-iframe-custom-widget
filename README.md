@@ -141,9 +141,9 @@ const ExampleComponent = () => {
 
 1. For Ontology object set fields, should I use `objectSet` or `temporaryObjectSetRid`? 
   
-  It depends on what version of [@osdk/client](https://www.npmjs.com/package/@osdk/client) you are using to query the Ontology from your app. You should use `objectSet`, which gives you the value of a objectTypeId with up to 10,000 primary keys if you are using [@osdk/client](https://www.npmjs.com/package/@osdk/client) version < 2.0, and `temporaryObjectSetRid` if you are using [@osdk/client](https://www.npmjs.com/package/@osdk/client) >= 2.0 as higher versions have the capabilities to materialize object sets from a temporary objectSet RID, and vice versa generate a temporary objectSet RID given a set of Ontology objects. Using `temporaryObjectSetRid` also removes the limitations of being restricted to single object type object sets, and the 10,000 limit. 
+  It depends on what version of [@osdk/client](https://www.npmjs.com/package/@osdk/client) you are using to query the Ontology from your app. You should use `objectSet`, which gives you the value of a objectTypeId with up to 10,000 primary keys if you are using [@osdk/client](https://www.npmjs.com/package/@osdk/client) version < 2.0, and `temporaryObjectSetRid` if you are using [@osdk/client](https://www.npmjs.com/package/@osdk/client) >= 2.0 as higher versions have the capabilities to materialize object sets from a temporary objectSet RID, and vice versa generate a temporary objectSet RID given a set of Ontology objects. Using `temporaryObjectSetRid` also removes the 10,000 objects per object set limit. 
 
-  Note that we will soon be making a major bump to 2.0, due to this package deprecating the option to use `objectSet` fields, as we encourage consumers to move to using `temporaryObjectSetRid` to query from the Ontology allowing the ability to pass to and from Workshop object sets containing multi-object type object sets, and object sets of size over 10,000. 
+  Note that we will soon be making a major bump to 2.0, due to this package deprecating the option to use `objectSet` fields, as we encourage consumers to move to using `temporaryObjectSetRid` to query from the Ontology allowing the ability to pass to and from Workshop object sets of size over 10,000 objects. 
 
 2. Where in my app should I call `useWorkshopContext`? 
 
