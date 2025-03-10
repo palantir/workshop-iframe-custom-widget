@@ -79,6 +79,8 @@ const LoadedComprehensiveExample: React.FC<{
     objectSetField.fieldValue;
 
   // Use https://www.npmjs.com/package/@osdk/client version >= 2.0 to query Ontology objects
+  // See `hydrateObjectSetFromRid` to resolve a temporaryObejctSetRid into an object set
+  // and `createAndFetchTempObjectSetRid` to convert an object set to a temporaryObejctSetRid when setting a value in Workshop 
   const temporaryObjectSetRidFieldValue: IAsyncValue<string | undefined> = temporaryObjectSetRidField.fieldValue;
 
   const stringListFieldValue: IAsyncValue<string[] | undefined>  =
