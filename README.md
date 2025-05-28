@@ -99,7 +99,7 @@ const ExampleComponent = () => {
   return visitLoadingState(workshopContext, {
     loading: () => <>Loading...</>,
     // Must explicitly declare type for the loaded context value
-    succeeded: loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>  => {
+    succeeded: (loadedWorkshopContext: IWorkshopContext<typeof BASIC_CONFIG_DEFINITION>) => {
       const { stringField, workshopEvent, listOfField } = loadedWorkshopContext;
 
       // Examples of retrieving single field values.
@@ -130,7 +130,7 @@ const ExampleComponent = () => {
 
 
       return <div>Render something here.</div>;
-    }
+    },
     reloading: _reloadingContext => <>Reloading...</>,
     failed: _error => <>Error...</>, 
   });
