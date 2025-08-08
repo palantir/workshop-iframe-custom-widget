@@ -21,6 +21,7 @@ export enum MESSAGE_TYPES_TO_WORKSHOP {
   SENDING_CONFIG = "react-app-sending-config",
   SETTING_VALUE = "react-app-setting-value",
   EXECUTING_EVENT = "react-app-executing-event",
+  SET_HEIGHT = "react-app-set-height",
 }
 
 export enum MESSAGE_TYPES_FROM_WORKSHOP {
@@ -36,7 +37,8 @@ export enum MESSAGE_TYPES_FROM_WORKSHOP {
 export type IMessageToWorkshop =
   | ISendConfigToWorkshopMessage
   | ISetWorkshopValue
-  | IExecuteWorkshopEvent;
+  | IExecuteWorkshopEvent
+  | ISetHeightMessage;
 
 /**
  * Messages that can be recieved from Workshop
@@ -74,6 +76,14 @@ export interface IExecuteWorkshopEvent {
   iframeWidgetId: string;
   eventLocator: ILocator;
   mouseEvent?: MouseEvent;
+}
+
+/**
+ * Sets the height of the iframe in Workshop.
+ */
+export interface ISetHeightMessage {
+  type: MESSAGE_TYPES_TO_WORKSHOP.SET_HEIGHT;
+  height: number;
 }
 
 /**

@@ -37,9 +37,21 @@ import { IConfigDefinition } from "./types";
  * @param configFields: IConfigDefinition
  * @returns IAsyncValue<IWorkshopContext>, a context object in an async wrapper.
  */
+/**
+ * Extends the IWorkshopContext with a setHeight function
+ */
+export type IWorkshopContextWithHeight<T extends IConfigDefinition> = IWorkshopContext<T> & {
+  /**
+   * Sets the height of the iframe in Workshop.
+   * Only has an effect when the app is running inside an iframe.
+   * @param height The height in pixels
+   */
+  setHeight: (height: number) => void;
+}
+
 export function useWorkshopContext<T extends IConfigDefinition>(
   configFields: IConfigDefinition
-): IAsyncValue<IWorkshopContext<T>> {
+): IAsyncValue<IWorkshopContextWithHeight<T>> {
   // The context's definition
   const [configDefinition] = React.useState<IConfigDefinition>(configFields);
   // The context's values
@@ -114,14 +126,37 @@ export function useWorkshopContext<T extends IConfigDefinition>(
 
   const insideIframe = isInsideIframe();
 
+  // Create a function to set the height of the iframe
+  const setHeight = React.useCallback((height: number) => {
+    if (isInsideIframe()) {
+      sendMessageToWorkshop({
+        type: MESSAGE_TYPES_TO_WORKSHOP.SET_HEIGHT,
+        height,
+      });
+    }
+  }, []);
+
+  // Create the context with the setHeight function
+  const createContextWithHeight = React.useCallback(
+    (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> => {
+      return {
+        ...context,
+        setHeight,
+      };
+    },
+    [setHeight]
+  );
+
   // If not inside iframe, simply return the loaded context with default values
   if (!insideIframe) {
     return asyncValueLoaded(
-      transformConfigWorkshopContext(
-        configDefinition,
-        configValues,
-        setConfigValues,
-        iframeWidgetId
+      createContextWithHeight(
+        transformConfigWorkshopContext(
+          configDefinition,
+          configValues,
+          setConfigValues,
+          iframeWidgetId
+        )
       )
     );
   }
@@ -137,11 +172,13 @@ export function useWorkshopContext<T extends IConfigDefinition>(
   // return the loaded context otherwise return that the context is loading.
   return workshopReceivedConfig
     ? asyncValueLoaded(
-        transformConfigWorkshopContext(
-          configDefinition,
-          configValues,
-          setConfigValues,
-          iframeWidgetId
+        createContextWithHeight(
+          transformConfigWorkshopContext(
+            configDefinition,
+            configValues,
+            setConfigValues,
+            iframeWidgetId
+          )
         )
       )
     : asyncValueLoading();

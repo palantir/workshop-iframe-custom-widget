@@ -38,6 +38,25 @@ export const Example = () => {
 };
 
 /**
+ * This is an example of how to set the height of the iframe in Workshop.
+ */
+export const IframeHeightExample = () => {
+  const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG);
+
+  // Use a visitor function to render based on the async status of the workshop context object
+  return visitLoadingState(workshopContext, {
+    loading: () => <>Loading...</>,
+    succeeded: loadedContext => {
+      // Set the iframe height to 500 pixels
+      loadedContext.setHeight(500);
+      return <>Iframe height set to 500 pixels</>;
+    }, 
+    reloading: _reloadingContext => <>Reloading...</>,
+    failed: _error => <>Error...</>, 
+  });
+};
+
+/**
  * This is an example of how to use values and setter methods inside of the context object.
  */
 const LoadedComprehensiveExample: React.FC<{

@@ -137,6 +137,30 @@ const ExampleComponent = () => {
 };
 ```
 
+## Dynamic Height Control
+
+You can dynamically control the height of your iframe when embedded in Workshop using the `setHeight` function that's returned as part of the workshop context. This allows your application to adjust its container height based on content changes, user interactions, or any other factors.
+
+### Basic Usage
+
+```typescript
+const workshopContext = useWorkshopContext(configFields);
+
+return visitLoadingState(workshopContext, {
+  loading: () => <>Loading...</>,
+  succeeded: (context) => {
+    // Set the height to 500px
+    context.setHeight(500);
+    
+    return <div>Your content here</div>;
+  },
+  reloading: _reloadingContext => <>Reloading...</>,
+  failed: _error => <>Error...</>,
+});
+```
+
+This approach gives you complete control over when and how to adjust the iframe's height. The `setHeight` function only has an effect when your application is running inside an iframe in Workshop.
+
 ## FAQ's
 
 1. For Ontology object set fields, should I use `objectSet` or `temporaryObjectSetRid`? 
