@@ -139,7 +139,9 @@ const ExampleComponent = () => {
 
 ## Dynamic Height Control
 
-You can dynamically control the height of your iframe when embedded in Workshop using the `setHeight` function that's returned as part of the workshop context. This allows your application to adjust its container height based on content changes, user interactions, or any other factors.
+You can dynamically control the maximum height of your iframe when embedded in Workshop using the `setAutoMaxHeight` function that's returned as part of the workshop context. This allows your application to adjust its container height based on content changes, user interactions, or any other factors.
+
+**Important Note:** The `setAutoMaxHeight` function only works when the Workshop widget's height is set to "auto (max)" in the Workshop widget settings.
 
 ### Basic Usage
 
@@ -149,8 +151,8 @@ const workshopContext = useWorkshopContext(configFields);
 return visitLoadingState(workshopContext, {
   loading: () => <>Loading...</>,
   succeeded: (context) => {
-    // Set the height to 500px
-    context.setHeight(500);
+    // Set the maximum height to 500px
+    context.setAutoMaxHeight(500);
     
     return <div>Your content here</div>;
   },

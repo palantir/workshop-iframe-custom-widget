@@ -83,6 +83,7 @@ export interface IExecuteWorkshopEvent {
  */
 export interface ISetHeightMessage {
   type: MESSAGE_TYPES_TO_WORKSHOP.SET_HEIGHT;
+  iframeWidgetId: string;
   height: number;
 }
 

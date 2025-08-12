@@ -42,11 +42,12 @@ import { IConfigDefinition } from "./types";
  */
 export type IWorkshopContextWithHeight<T extends IConfigDefinition> = IWorkshopContext<T> & {
   /**
-   * Sets the height of the iframe in Workshop.
-   * Only has an effect when the app is running inside an iframe.
-   * @param height The height in pixels
+   * Sets the maximum height of the iframe in Workshop.
+   * Only has an effect when the app is running inside an iframe AND
+   * the Workshop widget's height is set to "auto (max)".
+   * @param height The maximum height in pixels
    */
-  setHeight: (height: number) => void;
+  setAutoMaxHeight: (height: number) => void;
 }
 
 export function useWorkshopContext<T extends IConfigDefinition>(
@@ -126,25 +127,26 @@ export function useWorkshopContext<T extends IConfigDefinition>(
 
   const insideIframe = isInsideIframe();
 
-  // Create a function to set the height of the iframe
-  const setHeight = React.useCallback((height: number) => {
-    if (isInsideIframe()) {
+  // Create a function to set the auto max height of the iframe (only works when Workshop widget height is set to "auto (max)")
+  const setAutoMaxHeight = React.useCallback((height: number) => {
+    if (isInsideIframe() && iframeWidgetId != null) {
       sendMessageToWorkshop({
         type: MESSAGE_TYPES_TO_WORKSHOP.SET_HEIGHT,
+        iframeWidgetId,
         height,
       });
     }
-  }, []);
+  }, [iframeWidgetId]);
 
-  // Create the context with the setHeight function
+  // Create the context with the setAutoMaxHeight function
   const createContextWithHeight = React.useCallback(
     (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> => {
       return {
         ...context,
-        setHeight,
+        setAutoMaxHeight,
       };
     },
-    [setHeight]
+    [setAutoMaxHeight]
   );
 
   // If not inside iframe, simply return the loaded context with default values
