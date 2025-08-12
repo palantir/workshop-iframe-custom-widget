@@ -131,7 +131,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
   const setAutoMaxHeight = React.useCallback((height: number) => {
     if (isInsideIframe() && iframeWidgetId != null) {
       sendMessageToWorkshop({
-        type: MESSAGE_TYPES_TO_WORKSHOP.SET_HEIGHT,
+        type: MESSAGE_TYPES_TO_WORKSHOP.SET_AUTO_MAX_HEIGHT,
         iframeWidgetId,
         height,
       });

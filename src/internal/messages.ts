@@ -21,7 +21,7 @@ export enum MESSAGE_TYPES_TO_WORKSHOP {
   SENDING_CONFIG = "react-app-sending-config",
   SETTING_VALUE = "react-app-setting-value",
   EXECUTING_EVENT = "react-app-executing-event",
-  SET_HEIGHT = "react-app-set-height",
+  SET_AUTO_MAX_HEIGHT = "react-app-set-auto-max-height",
 }
 
 export enum MESSAGE_TYPES_FROM_WORKSHOP {
