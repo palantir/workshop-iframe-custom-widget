@@ -19,7 +19,7 @@ import {
   asyncValueFailed,
 } from "./types/loadingState";
 import { isInsideIframe, sendMessageToWorkshop } from "./utils";
-import { IWorkshopContext } from "./types/workshopContext";
+import { IWorkshopContext, IWorkshopContextWithHeight } from "./types/workshopContext";
 import { createDefaultConfigValueMap } from "./createDefaultConfigValueMap";
 import { transformConfigWorkshopContext } from "./transform-config";
 import {
@@ -37,18 +37,6 @@ import { IConfigDefinition } from "./types";
  * @param configFields: IConfigDefinition
  * @returns IAsyncValue<IWorkshopContext>, a context object in an async wrapper.
  */
-/**
- * Extends the IWorkshopContext with a setHeight function
- */
-export type IWorkshopContextWithHeight<T extends IConfigDefinition> = IWorkshopContext<T> & {
-  /**
-   * Sets the maximum height of the iframe in Workshop.
-   * Only has an effect when the app is running inside an iframe AND
-   * the Workshop widget's height is set to "auto (max)".
-   * @param height The maximum height in pixels
-   */
-  setAutoMaxHeight: (height: number) => void;
-}
 
 export function useWorkshopContext<T extends IConfigDefinition>(
   configFields: IConfigDefinition

@@ -11,7 +11,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-export type { IWorkshopContext } from "./workshopContext";
+export type { IWorkshopContext, IWorkshopContextWithHeight } from "./workshopContext";
 export * from "./loadingState";
 export * from "./objectSetLocators";
 export * from "./configDefinition";
