@@ -17,7 +17,7 @@ import {
   IAsyncValue,
   visitLoadingState,
 } from "../types/loadingState";
-import { IWorkshopContextWithHeight } from "../types/workshopContext";
+import { IWorkshopContext } from "../types/workshopContext";
 import { useWorkshopContext } from "../";
 import { ObjectSetLocators } from "../types";
 
@@ -27,7 +27,6 @@ import { ObjectSetLocators } from "../types";
  */
 export const Example = () => {
   const workshopContext = useWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>(COMPREHENSIVE_EXAMPLE_CONFIG);
-
   // Use a visitor function to render based on the async status of the workshop context object
   return visitLoadingState(workshopContext, {
     loading: () => <>Loading...</>,
@@ -42,7 +41,7 @@ export const Example = () => {
  * Note: This only works when the Workshop widget's height is set to "auto (max)".
  */
 export const IframeHeightExample = () => {
-  const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG);
+  const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG, { enableSetAutoMaxHeight: true });
 
   // Use a visitor function to render based on the async status of the workshop context object
   return visitLoadingState(workshopContext, {
@@ -61,7 +60,7 @@ export const IframeHeightExample = () => {
  * This is an example of how to use values and setter methods inside of the context object.
  */
 const LoadedComprehensiveExample: React.FC<{
-  loadedWorkshopContext: IWorkshopContextWithHeight<typeof COMPREHENSIVE_EXAMPLE_CONFIG>;
+  loadedWorkshopContext: IWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>;
 }> = (props) => {
   const {
     stringField,

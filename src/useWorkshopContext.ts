@@ -19,7 +19,7 @@ import {
   asyncValueFailed,
 } from "./types/loadingState";
 import { isInsideIframe, sendMessageToWorkshop } from "./utils";
-import { IWorkshopContext, IWorkshopContextWithHeight } from "./types/workshopContext";
+import { IWorkshopContext, IWorkshopContextWithHeight, IWorkshopContextOptions } from "./types/workshopContext";
 import { createDefaultConfigValueMap } from "./createDefaultConfigValueMap";
 import { transformConfigWorkshopContext } from "./transform-config";
 import {
@@ -38,9 +38,18 @@ import { IConfigDefinition } from "./types";
  * @returns IAsyncValue<IWorkshopContext>, a context object in an async wrapper.
  */
 
+/**
+ * Given the definition of config fields, returns a context object in an async wrapper with properties of the requested fields' IDs,
+ * and depending on the field type, each property contains either a value in an async wrapper with setter methods or a method to execute a Workshop event.
+ *
+ * @param configFields: IConfigDefinition
+ * @param options: IWorkshopContextOptions - Optional configuration options
+ * @returns IAsyncValue<IWorkshopContext<T>> or IAsyncValue<IWorkshopContextWithHeight<T>> depending on options
+ */
 export function useWorkshopContext<T extends IConfigDefinition>(
-  configFields: IConfigDefinition
-): IAsyncValue<IWorkshopContextWithHeight<T>> {
+  configFields: IConfigDefinition,
+  options?: IWorkshopContextOptions
+): IAsyncValue<IWorkshopContext<T>|IWorkshopContextWithHeight<T>> {
   // The context's definition
   const [configDefinition] = React.useState<IConfigDefinition>(configFields);
   // The context's values
@@ -126,21 +135,28 @@ export function useWorkshopContext<T extends IConfigDefinition>(
     }
   }, [iframeWidgetId]);
 
-  // Create the context with the setAutoMaxHeight function
-  const createContextWithHeight = React.useCallback(
-    (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> => {
-      return {
-        ...context,
-        setAutoMaxHeight,
-      };
+  // Create the final context, conditionally including setAutoMaxHeight function
+  // Only include setAutoMaxHeight in the returned context if enableSetAutoMaxHeight is true
+  const createFinalContext = React.useCallback(
+    (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> | IWorkshopContext<T> => {
+      // Only include setAutoMaxHeight in the returned context if enableSetAutoMaxHeight is true
+      if (options?.enableSetAutoMaxHeight === true) {
+        return {
+          ...context,
+          setAutoMaxHeight,
+        };
+      }
+      
+      // If enableSetAutoMaxHeight is not true, return the original context without setAutoMaxHeight
+      return context;
     },
-    [setAutoMaxHeight]
+    [setAutoMaxHeight, options?.enableSetAutoMaxHeight]
   );
 
   // If not inside iframe, simply return the loaded context with default values
   if (!insideIframe) {
     return asyncValueLoaded(
-      createContextWithHeight(
+      createFinalContext(
         transformConfigWorkshopContext(
           configDefinition,
           configValues,
@@ -162,7 +178,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
   // return the loaded context otherwise return that the context is loading.
   return workshopReceivedConfig
     ? asyncValueLoaded(
-        createContextWithHeight(
+        createFinalContext(
           transformConfigWorkshopContext(
             configDefinition,
             configValues,
