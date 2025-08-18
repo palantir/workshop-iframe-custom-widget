@@ -38,7 +38,7 @@ export const Example = () => {
 
 /**
  * This is an example of how to set the maximum height of the iframe in Workshop.
- * Note: This only works when the Workshop widget's height is set to "auto (max)".
+ * Note: This only works when the Workshop widget's height is set to "Auto (max)".
  */
 export const IframeHeightExample = () => {
   const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG, { enableSetAutoMaxHeight: true });
