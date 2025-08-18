@@ -35,21 +35,21 @@ import { IConfigDefinition } from "./types";
  * and depending on the field type, each property contains either a value in an async wrapper with setter methods or a method to execute a Workshop event.
  *
  * @param configFields: IConfigDefinition
- * @returns IAsyncValue<IWorkshopContext>, a context object in an async wrapper.
- */
-
-/**
- * Given the definition of config fields, returns a context object in an async wrapper with properties of the requested fields' IDs,
- * and depending on the field type, each property contains either a value in an async wrapper with setter methods or a method to execute a Workshop event.
- *
- * @param configFields: IConfigDefinition
  * @param options: IWorkshopContextOptions - Optional configuration options
  * @returns IAsyncValue<IWorkshopContext<T>> or IAsyncValue<IWorkshopContextWithHeight<T>> depending on options
  */
 export function useWorkshopContext<T extends IConfigDefinition>(
   configFields: IConfigDefinition,
+  options: { enableSetAutoMaxHeight: true }
+): IAsyncValue<IWorkshopContextWithHeight<T>>;
+export function useWorkshopContext<T extends IConfigDefinition>(
+  configFields: IConfigDefinition,
   options?: IWorkshopContextOptions
-): IAsyncValue<IWorkshopContext<T>|IWorkshopContextWithHeight<T>> {
+): IAsyncValue<IWorkshopContext<T>>;
+export function useWorkshopContext<T extends IConfigDefinition>(
+  configFields: IConfigDefinition,
+  options?: IWorkshopContextOptions
+): IAsyncValue<IWorkshopContextWithHeight<T>> | IAsyncValue<IWorkshopContext<T>> {
   // The context's definition
   const [configDefinition] = React.useState<IConfigDefinition>(configFields);
   // The context's values
@@ -136,7 +136,6 @@ export function useWorkshopContext<T extends IConfigDefinition>(
   }, [iframeWidgetId]);
 
   // Create the final context, conditionally including setAutoMaxHeight function
-  // Only include setAutoMaxHeight in the returned context if enableSetAutoMaxHeight is true
   const createFinalContext = React.useCallback(
     (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> | IWorkshopContext<T> => {
       // Only include setAutoMaxHeight in the returned context if enableSetAutoMaxHeight is true
@@ -144,7 +143,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
         return {
           ...context,
           setAutoMaxHeight,
-        };
+        } as IWorkshopContextWithHeight<T>;
       }
       
       // If enableSetAutoMaxHeight is not true, return the original context without setAutoMaxHeight
