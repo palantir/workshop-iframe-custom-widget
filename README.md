@@ -141,7 +141,7 @@ const ExampleComponent = () => {
 
 You can dynamically control the maximum height of your iframe when embedded in Workshop using the `setAutoMaxHeight` function that's returned as part of the workshop context. This allows your application to adjust its container height based on content changes, user interactions, or any other factors.
 
-**Important Note:** The `setAutoMaxHeight` function only works when the Workshop widget's height is set to "auto (max)" in the Workshop widget settings. If the max height configured in Workshop is less than the height sent by `setAutoMaxHeight`, the Workshop max height will override it, and the custom application widget will have a scroll bar for the difference between heights.
+**Important Note:** The `setAutoMaxHeight` function only works when the Workshop widget's height is set to "Auto (max)" in the Workshop widget's "Display" settings. If the max height configured in Workshop is less than the height sent by `setAutoMaxHeight`, the Workshop max height will override it, and the custom application widget will likely include a scroll bar to account for the overflow.
 
 ### Basic Usage
 
