@@ -127,6 +127,13 @@ export function useWorkshopContext<T extends IConfigDefinition>(
   // Create a function to set the auto max height of the iframe (only works when Workshop widget height is set to "auto (max)")
   const setAutoMaxHeight = React.useCallback((height: number) => {
     if (isInsideIframe() && iframeWidgetId != null) {
+      // Validate the height value
+      if (!Number.isInteger(height) || height < 0) {
+        console.warn("Invalid height value provided to setAutoMaxHeight. Height must be a non-negative integer.");
+        return;
+      }
+
+      // Send the message to Workshop
       sendMessageToWorkshop({
         type: MESSAGE_TYPES_TO_WORKSHOP.SET_AUTO_MAX_HEIGHT,
         iframeWidgetId,

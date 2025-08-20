@@ -146,7 +146,7 @@ You can dynamically control the maximum height of your iframe when embedded in W
 ### Basic Usage
 
 ```typescript
-const workshopContext = useWorkshopContext(configFields);
+const workshopContext = useWorkshopContext(configFields, { enableSetAutoMaxHeight: true });
 
 return visitLoadingState(workshopContext, {
   loading: () => <>Loading...</>,
