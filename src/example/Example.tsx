@@ -49,6 +49,10 @@ export const IframeHeightExample = () => {
     succeeded: loadedContext => {
       // Set the iframe maximum height to 500 pixels
       loadedContext.setAutoMaxHeight(500);
+      // To access the config values, use loadedContext.context
+      const context: IWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG> = loadedContext.context;
+      console.log(context.stringField.fieldValue, context.booleanField.fieldValue);
+
       return <>Iframe height set to 500 pixels</>;
     }, 
     reloading: _reloadingContext => <>Reloading...</>,
