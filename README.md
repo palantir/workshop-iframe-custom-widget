@@ -171,6 +171,8 @@ This approach gives you complete control over when and how to adjust the iframe'
 
   Note that we will soon be making a major bump to 2.0, due to this package deprecating the option to use `objectSet` fields, as we encourage consumers to move to using `temporaryObjectSetRid` to query from the Ontology allowing the ability to pass to and from Workshop object sets of size over 10,000 objects. 
 
+  To resolve a `temporaryObjectSetRid` into an object set, use `hydrateObjectSetFromRid`, and vice versa to convert an object set to a temporaryObjectSetRid, use `createAndFetchTempObjectSetRid` from [@osdk/client](https://www.npmjs.com/package/@osdk/client).
+
 2. Where in my app should I call `useWorkshopContext`? 
 
   `useWorkshopContext` should be called from the route that you plan to embed in Workshop. Each call of `useWorkshopContext` should map to one instance of the bidirectional iframe widget. For example, if you would like to set up your app such that route `/app1` and route `/app2` are each two distinct custom widgets, you should call `useWorkshopContext` per component rendered at those routes (a total of two calls). 
