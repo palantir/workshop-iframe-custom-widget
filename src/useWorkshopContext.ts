@@ -159,7 +159,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
       );
     }
     return asyncValueLoaded(context);
-  }, [])
+  }, [configValues, configDefinition, iframeWidgetId, options?.enableSetAutoMaxHeight, setConfigValues, setAutoMaxHeight]);
 
   // If not inside iframe, simply return the loaded context with default values
   if (!insideIframe) {
