@@ -142,35 +142,28 @@ export function useWorkshopContext<T extends IConfigDefinition>(
     }
   }, [iframeWidgetId]);
 
-  // Create the final context, conditionally including setAutoMaxHeight function
-  const createFinalContext = React.useCallback(
-    (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> | IWorkshopContext<T> => {
-      // Only include setAutoMaxHeight in the returned context if enableSetAutoMaxHeight is true
-      if (options?.enableSetAutoMaxHeight === true) {
-        return {
-          ...context,
+  const createFinalContext = React.useCallback((): IAsyncValue<IWorkshopContextWithHeight<T>> | IAsyncValue<IWorkshopContext<T>> => {
+    const context = 
+      transformConfigWorkshopContext(
+        configDefinition,
+        configValues,
+        setConfigValues,
+        iframeWidgetId
+      );
+    if (options?.enableSetAutoMaxHeight) {
+      return asyncValueLoaded(
+        {
+          context, 
           setAutoMaxHeight,
-        } as IWorkshopContextWithHeight<T>;
-      }
-      
-      // If enableSetAutoMaxHeight is not true, return the original context without setAutoMaxHeight
-      return context;
-    },
-    [setAutoMaxHeight, options?.enableSetAutoMaxHeight]
-  );
+        }
+      );
+    }
+    return asyncValueLoaded(context);
+  }, [])
 
   // If not inside iframe, simply return the loaded context with default values
   if (!insideIframe) {
-    return asyncValueLoaded(
-      createFinalContext(
-        transformConfigWorkshopContext(
-          configDefinition,
-          configValues,
-          setConfigValues,
-          iframeWidgetId
-        )
-      )
-    );
+    return createFinalContext();
   }
 
   // Config was rejected by workshop, return failed along with reason
@@ -182,16 +175,9 @@ export function useWorkshopContext<T extends IConfigDefinition>(
 
   // Finally, if inside iframe and Workshop has signalled that the config was received,
   // return the loaded context otherwise return that the context is loading.
-  return workshopReceivedConfig
-    ? asyncValueLoaded(
-        createFinalContext(
-          transformConfigWorkshopContext(
-            configDefinition,
-            configValues,
-            setConfigValues,
-            iframeWidgetId
-          )
-        )
-      )
-    : asyncValueLoading();
+  if (workshopReceivedConfig) {
+    return createFinalContext();
+  }
+
+  return asyncValueLoading();
 }
