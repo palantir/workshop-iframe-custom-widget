@@ -26,12 +26,31 @@ import { ObjectSetLocators } from "../types";
  * retrieving values or setting values.
  */
 export const Example = () => {
-  const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG);
-
+  const workshopContext = useWorkshopContext<typeof COMPREHENSIVE_EXAMPLE_CONFIG>(COMPREHENSIVE_EXAMPLE_CONFIG);
   // Use a visitor function to render based on the async status of the workshop context object
   return visitLoadingState(workshopContext, {
     loading: () => <>Loading...</>,
     succeeded: loadedContext => <LoadedComprehensiveExample loadedWorkshopContext={loadedContext} />, 
+    reloading: _reloadingContext => <>Reloading...</>,
+    failed: _error => <>Error...</>, 
+  });
+};
+
+/**
+ * This is an example of how to set the maximum height of the iframe in Workshop.
+ * Note: This only works when the Workshop widget's height is set to "Auto (max)".
+ */
+export const IframeHeightExample = () => {
+  const workshopContext = useWorkshopContext(COMPREHENSIVE_EXAMPLE_CONFIG, { enableSetAutoMaxHeight: true });
+
+  // Use a visitor function to render based on the async status of the workshop context object
+  return visitLoadingState(workshopContext, {
+    loading: () => <>Loading...</>,
+    succeeded: loadedContext => {
+      // Set the iframe maximum height to 500 pixels
+      loadedContext.setAutoMaxHeight(500);
+      return <>Iframe height set to 500 pixels</>;
+    }, 
     reloading: _reloadingContext => <>Reloading...</>,
     failed: _error => <>Error...</>, 
   });

@@ -19,7 +19,7 @@ import {
   asyncValueFailed,
 } from "./types/loadingState";
 import { isInsideIframe, sendMessageToWorkshop } from "./utils";
-import { IWorkshopContext } from "./types/workshopContext";
+import { IWorkshopContext, IWorkshopContextWithHeight, IWorkshopContextOptions } from "./types/workshopContext";
 import { createDefaultConfigValueMap } from "./createDefaultConfigValueMap";
 import { transformConfigWorkshopContext } from "./transform-config";
 import {
@@ -35,11 +35,21 @@ import { IConfigDefinition } from "./types";
  * and depending on the field type, each property contains either a value in an async wrapper with setter methods or a method to execute a Workshop event.
  *
  * @param configFields: IConfigDefinition
- * @returns IAsyncValue<IWorkshopContext>, a context object in an async wrapper.
+ * @param options: IWorkshopContextOptions - Optional configuration options
+ * @returns IAsyncValue<IWorkshopContext<T>> or IAsyncValue<IWorkshopContextWithHeight<T>> depending on options
  */
 export function useWorkshopContext<T extends IConfigDefinition>(
-  configFields: IConfigDefinition
-): IAsyncValue<IWorkshopContext<T>> {
+  configFields: IConfigDefinition,
+  options: { enableSetAutoMaxHeight: true }
+): IAsyncValue<IWorkshopContextWithHeight<T>>;
+export function useWorkshopContext<T extends IConfigDefinition>(
+  configFields: IConfigDefinition,
+  options?: IWorkshopContextOptions
+): IAsyncValue<IWorkshopContext<T>>;
+export function useWorkshopContext<T extends IConfigDefinition>(
+  configFields: IConfigDefinition,
+  options?: IWorkshopContextOptions
+): IAsyncValue<IWorkshopContextWithHeight<T>> | IAsyncValue<IWorkshopContext<T>> {
   // The context's definition
   const [configDefinition] = React.useState<IConfigDefinition>(configFields);
   // The context's values
@@ -114,14 +124,51 @@ export function useWorkshopContext<T extends IConfigDefinition>(
 
   const insideIframe = isInsideIframe();
 
+  // Create a function to set the auto max height of the iframe (only works when Workshop widget height is set to "auto (max)")
+  const setAutoMaxHeight = React.useCallback((height: number) => {
+    if (isInsideIframe() && iframeWidgetId != null) {
+      // Validate the height value
+      if (!Number.isInteger(height) || height < 0) {
+        console.warn("Invalid height value provided to setAutoMaxHeight. Height must be a non-negative integer.");
+        return;
+      }
+
+      // Send the message to Workshop
+      sendMessageToWorkshop({
+        type: MESSAGE_TYPES_TO_WORKSHOP.SET_AUTO_MAX_HEIGHT,
+        iframeWidgetId,
+        height,
+      });
+    }
+  }, [iframeWidgetId]);
+
+  // Create the final context, conditionally including setAutoMaxHeight function
+  const createFinalContext = React.useCallback(
+    (context: IWorkshopContext<T>): IWorkshopContextWithHeight<T> | IWorkshopContext<T> => {
+      // Only include setAutoMaxHeight in the returned context if enableSetAutoMaxHeight is true
+      if (options?.enableSetAutoMaxHeight === true) {
+        return {
+          ...context,
+          setAutoMaxHeight,
+        } as IWorkshopContextWithHeight<T>;
+      }
+      
+      // If enableSetAutoMaxHeight is not true, return the original context without setAutoMaxHeight
+      return context;
+    },
+    [setAutoMaxHeight, options?.enableSetAutoMaxHeight]
+  );
+
   // If not inside iframe, simply return the loaded context with default values
   if (!insideIframe) {
     return asyncValueLoaded(
-      transformConfigWorkshopContext(
-        configDefinition,
-        configValues,
-        setConfigValues,
-        iframeWidgetId
+      createFinalContext(
+        transformConfigWorkshopContext(
+          configDefinition,
+          configValues,
+          setConfigValues,
+          iframeWidgetId
+        )
       )
     );
   }
@@ -137,11 +184,13 @@ export function useWorkshopContext<T extends IConfigDefinition>(
   // return the loaded context otherwise return that the context is loading.
   return workshopReceivedConfig
     ? asyncValueLoaded(
-        transformConfigWorkshopContext(
-          configDefinition,
-          configValues,
-          setConfigValues,
-          iframeWidgetId
+        createFinalContext(
+          transformConfigWorkshopContext(
+            configDefinition,
+            configValues,
+            setConfigValues,
+            iframeWidgetId
+          )
         )
       )
     : asyncValueLoading();

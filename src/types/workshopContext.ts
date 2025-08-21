@@ -202,3 +202,32 @@ export type IWorkshopContextField<
   T extends IConfigDefinition,
   V extends IVariableType_WithDefaultValue
 > = ValueAndSetterMethods<V> | ExecutableEvent | IWorkshopContext<T>[];
+
+/**
+ * Options for useWorkshopContext
+ */
+export interface IWorkshopContextOptions {
+  /**
+   * If true, the returned context will include the setAutoMaxHeight function.
+   * Default is false for backward compatibility.
+   */
+  enableSetAutoMaxHeight?: boolean;
+}
+
+/**
+ * Interface for the height control functionality
+ */
+export interface IHeightControl {
+  /**
+   * Sets the maximum height of the iframe in Workshop.
+   * Only has an effect when the app is running inside an iframe AND
+   * the Workshop widget's height is set to "auto (max)".
+   * @param height The maximum height in pixels
+   */
+  setAutoMaxHeight: (height: number) => void;
+}
+
+/**
+ * Extends the IWorkshopContext with a setHeight function
+ */
+export type IWorkshopContextWithHeight<T extends IConfigDefinition> = IWorkshopContext<T> & IHeightControl;
