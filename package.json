@@ -29,10 +29,10 @@
     },
     "publishConfig": {
         "access": "public"
-    }, 
+    },
     "files": [
-        "build", 
-        "README.md", 
+        "build",
+        "README.md",
         "LICENSE.md"
     ]
 }

@@ -29,6 +29,7 @@ import {
   IMessageFromWorkshop,
 } from "./internal";
 import { IConfigDefinition } from "./types";
+import { version } from "../package.json";
 
 /**
  * Given the definition of config fields, returns a context object in an async wrapper with properties of the requested fields' IDs,
@@ -110,6 +111,7 @@ export function useWorkshopContext<T extends IConfigDefinition>(
       type: MESSAGE_TYPES_TO_WORKSHOP.SENDING_CONFIG,
       config: configFields,
       pathname: window.location.pathname,
+      packageVersion: version,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
