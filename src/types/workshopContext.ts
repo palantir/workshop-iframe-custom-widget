@@ -230,4 +230,4 @@ export interface IHeightControl {
 /**
  * Extends the IWorkshopContext with a setHeight function
  */
-export type IWorkshopContextWithHeight<T extends IConfigDefinition> = IWorkshopContext<T> & IHeightControl;
+export type IWorkshopContextWithHeight<T extends IConfigDefinition> = { context: IWorkshopContext<T> } & IHeightControl;
