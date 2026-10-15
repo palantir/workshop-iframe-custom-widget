@@ -112,12 +112,14 @@ export function maybeTransformValueToSetToValueMapTypes<
   variableType: IVariableType_WithDefaultValue,
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableValue | undefined {
-  if (variableType.type === "struct") {
-    return transformStructFieldValues(
-      variableType,
-      value,
-      maybeTransformValueToSetToValueMapTypes
-    );
+  if (value != null && typeof value === "object" && "structFields" in value) {
+    return variableType.type === "struct"
+      ? transformStructFieldValues(
+          variableType,
+          value,
+          maybeTransformValueToSetToValueMapTypes
+        )
+      : undefined;
   }
   // Empty primitive arrays 
   if (Array.isArray(value) && value.length === 0 && variableType.type !== "objectSet") {
@@ -174,16 +176,18 @@ export function maybeTransformValueToSetToWorkshopValue<
   variableType: IVariableType_WithDefaultValue,
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableToSet | undefined {
-  if (variableType.type === "struct") {
-    return transformStructFieldValues(
-      variableType,
-      value,
-      (structFieldType, structFieldValue) =>
-        maybeTransformValueToSetToWorkshopValue(
-          getWorkshopStructFieldType(structFieldType),
-          structFieldValue
+  if (value != null && typeof value === "object" && "structFields" in value) {
+    return variableType.type === "struct"
+      ? transformStructFieldValues(
+          variableType,
+          value,
+          (structFieldType, structFieldValue) =>
+            maybeTransformValueToSetToWorkshopValue(
+              getWorkshopStructFieldType(structFieldType),
+              structFieldValue
+            )
         )
-    );
+      : undefined;
   }
   // Empty primitve arrays 
   if (Array.isArray(value) && value.length === 0 && variableType.type !== "objectSet") {
@@ -214,23 +218,14 @@ export function maybeTransformValueToSetToWorkshopValue<
  */
 function transformStructFieldValues<TransformedValue>(
   structVariableType: IVariableType_Struct_WithDefaultValue,
-  structValue:
-    | VariableTypeToValueTypeToSet<IVariableType_WithDefaultValue>
-    | undefined,
+  structValue: VariableTypeToValueTypeToSet<IVariableType_Struct_WithDefaultValue>,
   transformStructFieldValue: (
     structFieldType: IStructVariableFieldType_WithDefaultValue,
     structFieldValue:
       | VariableTypeToValueTypeToSet<IStructVariableFieldType_WithDefaultValue>
       | undefined
   ) => TransformedValue | undefined
-): { structFields: { [structFieldId: string]: TransformedValue | undefined } } | undefined {
-  if (
-    structValue == null ||
-    typeof structValue !== "object" ||
-    !("structFields" in structValue)
-  ) {
-    return undefined;
-  }
+): { structFields: { [structFieldId: string]: TransformedValue | undefined } } {
   return {
     structFields: Object.fromEntries(
       structVariableType.structFieldTypes.map(({ fieldId, fieldType }) => [
