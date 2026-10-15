@@ -94,9 +94,7 @@ function getDefaultValue(
   }
 }
 
-/**
- * A struct only has a default value if at least one of its struct fields has a default value.
- */
+/** Undefined unless at least one struct field has a default value. */
 function getStructDefaultValue(
   structVariableType: IVariableType_Struct_WithDefaultValue
 ): StructValue | undefined {

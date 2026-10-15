@@ -87,9 +87,7 @@ export interface IVariableType_TimestampList_WithDefaultValue {
   defaultValue?: Date[]; // Represented as a Date, in Workshop the time property will be dropped
 }
 
-/**
- * The default value of a struct is derived from the `defaultValue` of each of its struct field types.
- */
+/** Defaults come from each struct field type's `defaultValue`. */
 export interface IVariableType_Struct_WithDefaultValue {
   type: "struct";
   structFieldTypes: readonly IStructVariableFieldTypes_WithDefaultValue[];

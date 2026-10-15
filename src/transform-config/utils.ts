@@ -104,7 +104,7 @@ function isDate(val: unknown): val is Date {
  * - for objectSet variables, extract the primaryKeys, which is OSDK's preferred format to load objects with and cap to first 10,000 primaryKeys
  * - for date variables, convert from Date value to string value in format "yyyy-mm-dd"
  * - for date array variables, convert from Date[] value to string[] in format "yyyy-mm-dd" per entry
- * - for struct variables, transform each struct field's value based on its struct field type
+ * - for struct variables, transform each struct field by its field type
  */
 export function maybeTransformValueToSetToValueMapTypes<
   V extends IVariableType_WithDefaultValue
@@ -168,7 +168,7 @@ export function maybeTransformValueToSetToValueMapTypes<
  * - for objectSet variables, extract the objectRids, which is Workshop's preferred format to load objects with and cap to first 10,000 objectRids
  * - for date variables, convert from Date value to string value in format "yyyy-mm-dd"
  * - for date array variables, convert from Date[] value to string[] in format "yyyy-mm-dd" per entry
- * - for struct variables, transform each struct field's value based on its struct field type
+ * - for struct variables, transform each struct field by its field type
  */
 export function maybeTransformValueToSetToWorkshopValue<
   V extends IVariableType_WithDefaultValue
@@ -212,10 +212,7 @@ export function maybeTransformValueToSetToWorkshopValue<
   return value;
 }
 
-/**
- * Transforms the value of each struct field defined on the struct variable type.
- * Struct fields not defined on the struct variable type are dropped.
- */
+/** Struct fields not in the struct definition are dropped. */
 function transformStructFieldValues<TransformedValue>(
   structVariableType: IVariableType_Struct_WithDefaultValue,
   structValue: VariableTypeToValueTypeToSet<IVariableType_Struct_WithDefaultValue>,
@@ -237,8 +234,7 @@ function transformStructFieldValues<TransformedValue>(
 }
 
 /**
- * NOTE: Workshop only converts "yyyy-mm-dd" strings back into Dates based on the top level variable type, which for struct fields
- * is the struct rather than the struct field. Treating date struct fields as timestamps sends them to Workshop as Date objects instead.
+ * NOTE: Workshop only converts "yyyy-mm-dd" strings to Dates for top-level date variables, so date struct fields are sent as Dates.
  */
 function getWorkshopStructFieldType(
   structFieldType: IStructVariableFieldType_WithDefaultValue
