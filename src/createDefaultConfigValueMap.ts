@@ -15,7 +15,13 @@
 
 import { asyncValueLoaded, IAsyncValue, IConfigDefinition } from "./types";
 import { assertNever, formatDate } from "./utils";
-import { IConfigValueMap, IVariableType_WithDefaultValue, IVariableValue } from "./internal";
+import {
+  IConfigValueMap,
+  IVariableType_Struct_WithDefaultValue,
+  IVariableType_WithDefaultValue,
+  IVariableValue,
+  StructValue,
+} from "./internal";
 
 /**
  * Takes the configDefinition and pulls out the default values, creating a default config values map.
@@ -66,12 +72,39 @@ export function createDefaultConfigValueMap(
 function variableTypeWithDefaultValueToValue(
   variableType: IVariableType_WithDefaultValue
 ): IAsyncValue<IVariableValue | undefined> {
-  // For date and date-list variable types, need to convert from Date to string and Date[] to string[]
-  // As we will save date values as strings in format "yyyy-mm-dd"
-  if (variableType.type === "date" && variableType.defaultValue != null) {
-    return asyncValueLoaded(formatDate(variableType.defaultValue));
-  } else if (variableType.type === "date-list" && variableType.defaultValue != null) {
-    return asyncValueLoaded(variableType.defaultValue.map(formatDate));
-  } 
-  return asyncValueLoaded(variableType.defaultValue);
+  return asyncValueLoaded(getDefaultValue(variableType));
+}
+
+function getDefaultValue(
+  variableType: IVariableType_WithDefaultValue
+): IVariableValue | undefined {
+  switch (variableType.type) {
+    // For date and date-list variable types, need to convert from Date to string and Date[] to string[]
+    // As we will save date values as strings in format "yyyy-mm-dd"
+    case "date":
+      return variableType.defaultValue == null
+        ? undefined
+        : formatDate(variableType.defaultValue);
+    case "date-list":
+      return variableType.defaultValue?.map(formatDate);
+    case "struct":
+      return getStructDefaultValue(variableType);
+    default:
+      return variableType.defaultValue;
+  }
+}
+
+/**
+ * A struct only has a default value if at least one of its struct fields has a default value.
+ */
+function getStructDefaultValue(
+  structVariableType: IVariableType_Struct_WithDefaultValue
+): StructValue | undefined {
+  const structFieldEntries = structVariableType.structFieldTypes.map(
+    ({ fieldId, fieldType }) => [fieldId, getDefaultValue(fieldType)] as const
+  );
+  if (structFieldEntries.every(([, defaultValue]) => defaultValue == null)) {
+    return undefined;
+  }
+  return { structFields: Object.fromEntries(structFieldEntries) };
 }
