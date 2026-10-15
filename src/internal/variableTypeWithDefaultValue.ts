@@ -27,24 +27,15 @@ export type IVariableType_WithDefaultValue =
   | IVariableType_NumberList_WithDefaultValue
   | IVariableType_DateList_WithDefaultValue
   | IVariableType_TimestampList_WithDefaultValue
-  // | IVariableType_Struct // TODO: Struct support is coming, but is not fully supported yet
+  | IVariableType_Struct_WithDefaultValue
   | IVariableType_ObjectSet_WithDefaultValue
   | IVariableType_TemporaryObjectSetRidWithDefaultValue; 
 
-// Workshop only supports struct fields containing the following types. Nested structs are not yet supported
-export type IStructVariableFieldType_WithDefaultValue =
-  | IVariableType_String_WithDefaultValue
-  | IVariableType_Boolean_WithDefaultValue
-  | IVariableType_Number_WithDefaultValue
-  | IVariableType_Date_WithDefaultValue
-  | IVariableType_Timestamp_WithDefaultValue
-  | IVariableType_StringList_WithDefaultValue
-  | IVariableType_BooleanList_WithDefaultValue
-  | IVariableType_NumberList_WithDefaultValue
-  | IVariableType_DateList_WithDefaultValue
-  | IVariableType_TimestampList_WithDefaultValue
-  | IVariableType_ObjectSet_WithDefaultValue
-  | IVariableType_TemporaryObjectSetRidWithDefaultValue;
+// Workshop does not support nested structs, so struct fields can be any variable type except another struct
+export type IStructVariableFieldType_WithDefaultValue = Exclude<
+  IVariableType_WithDefaultValue,
+  IVariableType_Struct_WithDefaultValue
+>;
 
 export interface IVariableType_String_WithDefaultValue {
   type: "string";
@@ -96,6 +87,7 @@ export interface IVariableType_TimestampList_WithDefaultValue {
   defaultValue?: Date[]; // Represented as a Date, in Workshop the time property will be dropped
 }
 
+/** Defaults come from each struct field type's `defaultValue`. */
 export interface IVariableType_Struct_WithDefaultValue {
   type: "struct";
   structFieldTypes: readonly IStructVariableFieldTypes_WithDefaultValue[];

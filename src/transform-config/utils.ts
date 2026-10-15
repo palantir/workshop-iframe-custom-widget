@@ -14,7 +14,9 @@ limitations under the License.
 import {
   IConfigValueMap,
   ILocator,
+  IStructVariableFieldType_WithDefaultValue,
   IVariableValue,
+  IVariableType_Struct_WithDefaultValue,
   IVariableType_WithDefaultValue,
   IVariableToSet,
 } from "../internal";
@@ -102,6 +104,7 @@ function isDate(val: unknown): val is Date {
  * - for objectSet variables, extract the primaryKeys, which is OSDK's preferred format to load objects with and cap to first 10,000 primaryKeys
  * - for date variables, convert from Date value to string value in format "yyyy-mm-dd"
  * - for date array variables, convert from Date[] value to string[] in format "yyyy-mm-dd" per entry
+ * - for struct variables, transform each struct field by its field type
  */
 export function maybeTransformValueToSetToValueMapTypes<
   V extends IVariableType_WithDefaultValue
@@ -109,6 +112,15 @@ export function maybeTransformValueToSetToValueMapTypes<
   variableType: IVariableType_WithDefaultValue,
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableValue | undefined {
+  if (value != null && typeof value === "object" && "structFields" in value) {
+    return variableType.type === "struct"
+      ? transformStructFieldValues(
+          variableType,
+          value,
+          maybeTransformValueToSetToValueMapTypes
+        )
+      : undefined;
+  }
   // Empty primitive arrays 
   if (Array.isArray(value) && value.length === 0 && variableType.type !== "objectSet") {
     return [];
@@ -156,6 +168,7 @@ export function maybeTransformValueToSetToValueMapTypes<
  * - for objectSet variables, extract the objectRids, which is Workshop's preferred format to load objects with and cap to first 10,000 objectRids
  * - for date variables, convert from Date value to string value in format "yyyy-mm-dd"
  * - for date array variables, convert from Date[] value to string[] in format "yyyy-mm-dd" per entry
+ * - for struct variables, transform each struct field by its field type
  */
 export function maybeTransformValueToSetToWorkshopValue<
   V extends IVariableType_WithDefaultValue
@@ -163,6 +176,19 @@ export function maybeTransformValueToSetToWorkshopValue<
   variableType: IVariableType_WithDefaultValue,
   value?: VariableTypeToValueTypeToSet<V>
 ): IVariableToSet | undefined {
+  if (value != null && typeof value === "object" && "structFields" in value) {
+    return variableType.type === "struct"
+      ? transformStructFieldValues(
+          variableType,
+          value,
+          (structFieldType, structFieldValue) =>
+            maybeTransformValueToSetToWorkshopValue(
+              getWorkshopStructFieldType(structFieldType),
+              structFieldValue
+            )
+        )
+      : undefined;
+  }
   // Empty primitve arrays 
   if (Array.isArray(value) && value.length === 0 && variableType.type !== "objectSet") {
     return [];
@@ -184,4 +210,41 @@ export function maybeTransformValueToSetToWorkshopValue<
     return value.map(formatDate);
   }
   return value;
+}
+
+/** Struct fields not in the struct definition are dropped. */
+function transformStructFieldValues<TransformedValue>(
+  structVariableType: IVariableType_Struct_WithDefaultValue,
+  structValue: VariableTypeToValueTypeToSet<IVariableType_Struct_WithDefaultValue>,
+  transformStructFieldValue: (
+    structFieldType: IStructVariableFieldType_WithDefaultValue,
+    structFieldValue:
+      | VariableTypeToValueTypeToSet<IStructVariableFieldType_WithDefaultValue>
+      | undefined
+  ) => TransformedValue | undefined
+): { structFields: { [structFieldId: string]: TransformedValue | undefined } } {
+  return {
+    structFields: Object.fromEntries(
+      structVariableType.structFieldTypes.map(({ fieldId, fieldType }) => [
+        fieldId,
+        transformStructFieldValue(fieldType, structValue.structFields[fieldId]),
+      ])
+    ),
+  };
+}
+
+/**
+ * NOTE: Workshop only converts "yyyy-mm-dd" strings to Dates for top-level date variables, so date struct fields are sent as Dates.
+ */
+function getWorkshopStructFieldType(
+  structFieldType: IStructVariableFieldType_WithDefaultValue
+): IStructVariableFieldType_WithDefaultValue {
+  switch (structFieldType.type) {
+    case "date":
+      return { type: "timestamp" };
+    case "date-list":
+      return { type: "timestamp-list" };
+    default:
+      return structFieldType;
+  }
 }

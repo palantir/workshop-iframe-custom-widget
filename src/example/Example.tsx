@@ -80,6 +80,7 @@ const LoadedComprehensiveExample: React.FC<{
     numberListField,
     dateListField,
     timestampListField,
+    structField,
     listOfFields,
   } = props.loadedWorkshopContext;
 
@@ -117,6 +118,18 @@ const LoadedComprehensiveExample: React.FC<{
     dateListField.fieldValue;
   const timestampListFieldValue: IAsyncValue<Date[] | undefined> =
     timestampListField.fieldValue;
+  // struct field values follow the same conventions as their non-struct equivalents, e.g. dates are stored as strings in format "yyyy-mm-dd"
+  const structFieldValue: IAsyncValue<
+    | {
+        structFields: {
+          structStringField: string | undefined;
+          structBooleanField: boolean | undefined;
+          structDateField: string | undefined;
+          structObjectSetField: ObjectSetLocators | undefined;
+        };
+      }
+    | undefined
+  > = structField.fieldValue;
 
   /**
    * Examples of setting values on the config fields.
@@ -135,6 +148,18 @@ const LoadedComprehensiveExample: React.FC<{
   dateField.setLoadedValue(new Date("2024-01-01")); // The value takes the config field type, in this case, Date. Note that the value saved is a string in format "yyyy-mm-dd"
   dateField.setReloadingValue(new Date("2024-12-31")); // The value takes the config field type, in this case, Date. Note that the value saved is a string in format "yyyy-mm-dd"
   dateField.setFailedWithError("Oh no, an error occurred!");  // Takes string for error message
+
+  structField.setLoading();
+  // The value takes the struct's field types, in this case objectSet struct fields take OntologyObjects like objectSet fields do
+  structField.setLoadedValue({
+    structFields: {
+      structStringField: "Hello struct!",
+      structBooleanField: true,
+      structDateField: new Date("2024-01-01"),
+      structObjectSetField: [],
+    },
+  });
+  structField.setFailedWithError("Oh no, an error occurred!"); // Takes string for error message
 
   /**
    * Examples of executing an event
@@ -162,6 +187,13 @@ const LoadedComprehensiveExample: React.FC<{
     listItem.stringFieldInsideListOf.setFailedWithError(
       `stringFieldInsideListOf failed to load at ${index}`
     );
+
+    listItem.structInsideListOf.setLoadedValue({
+      structFields: {
+        structNumberField: index,
+        structDateListField: [new Date("2024-01-01"), new Date("2024-12-31")],
+      },
+    });
 
     // Can have nested listOf configs
     listItem.nestedListOfField.forEach((nestedListItem, nestedIndex) => {
@@ -202,5 +234,7 @@ const LoadedComprehensiveExample: React.FC<{
     {dateListFieldValue}
     <br />
     {timestampListFieldValue}
+    <br />
+    {structFieldValue}
   </>;
 };

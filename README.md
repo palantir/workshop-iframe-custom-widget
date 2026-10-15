@@ -20,7 +20,7 @@ So why might you use this new option OSDK + custom iframe widget and why are we 
 
 - When a user opens the iframe for the first time they might see a login screen to authenticate. The iframe is responsible for going through the necessary authentication flow.
 - ObjectSet variables require specifying a concrete ObjectType for a given variable. Additionally, the current limit is 10,000 objects primaryKeys/objectRids that can be passed back and forth between Workshop and the iframed app. Any more and they will be cut off at the first 10,000. This limitation will be removed once OSDK is able to support loading ObjectSets from temporary objectSetRids.
-- Struct variable are not currently supported, but they are coming soon.
+- Struct variables cannot contain nested struct fields, matching Workshop.
 
 ## Install
 
@@ -135,6 +135,53 @@ const ExampleComponent = () => {
     failed: _error => <>Error...</>, 
   });
 };
+```
+
+## Struct Fields
+
+Struct variables mirror Workshop's struct variable type: a list of struct fields, each with a `fieldId` and a `fieldType`. A struct field type can be any variable type except another struct. The default value of a struct is built from the `defaultValue` of each of its struct field types.
+
+```typescript
+export const STRUCT_CONFIG_DEFINITION = [
+  {
+    fieldId: "structField",
+    field: {
+      type: "single",
+      label: "Struct field",
+      fieldValue: {
+        type: "inputOutput",
+        variableType: {
+          type: "struct",
+          structFieldTypes: [
+            { fieldId: "name", fieldType: { type: "string", defaultValue: "Jane" } },
+            { fieldId: "startDate", fieldType: { type: "date" } },
+            { fieldId: "movies", fieldType: { type: "objectSet", objectTypeId: "rotten-tomatoes-movies" } },
+          ],
+        },
+      },
+    },
+  },
+] as const satisfies IConfigDefinition;
+```
+
+Struct values are wrapped in `structFields`, and each struct field follows the same conventions as its non-struct equivalent (e.g. dates are read as strings in format "yyyy-mm-dd", and object sets are set with OSDK objects):
+
+```typescript
+const structValue: IAsyncValue<{
+  structFields: {
+    name: string | undefined;
+    startDate: string | undefined;
+    movies: ObjectSetLocators | undefined;
+  };
+} | undefined> = structField.fieldValue;
+
+structField.setLoadedValue({
+  structFields: {
+    name: "John",
+    startDate: new Date("2024-01-01"),
+    movies: [],
+  },
+});
 ```
 
 ## Dynamic Height Control
